@@ -1,0 +1,32 @@
+<div class="header__inner">
+	<div class="brand">
+		<!-- <span class="brand__logo" aria-hidden="true">🏛️</span> -->
+		<span class="brand__text">Cabalian Portal</span>
+	</div>
+	<nav class="main-nav" aria-label="Main navigation">
+		<ul class="main-nav__list">
+			<!-- Temporarily commented out navigation links
+			<li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
+			<li><a routerLink="/services" routerLinkActive="active">Services</a></li>
+			<li><a routerLink="/reports" routerLinkActive="active">Reports</a></li>
+			<li><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
+			-->
+		</ul>
+	</nav>
+	<div class="header__actions">
+		<button type="button" class="btn btn--ghost" aria-label="Search" title="Search" (click)="toggleSearch()" [attr.aria-expanded]="showSearch">
+			<svg class="icon icon-search" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+				<path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0A4.5 4.5 0 1 1 14 9.5 4.505 4.505 0 0 1 9.5 14Z" />
+			</svg>
+		</button>
+		<form *ngIf="showSearch" (ngSubmit)="submitSearch()" class="header-search" role="search" aria-label="Site search">
+			<input #searchInput type="text" [(ngModel)]="query" name="q" placeholder="Search..." autocomplete="off" class="header-search__input" aria-label="Search query" (input)="onInput()" (blur)="handleBlur()" (keydown.escape)="handleEscape()" />
+		</form>
+		<button type="button" class="btn btn--ghost" aria-label="Notifications">
+			<svg class="icon icon-bell" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+				<path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11c0-3.07-1.64-5.64-4.5-6.32V4a2.5 2.5 0 0 0-5 0v.68C6.64 5.36 5 7.92 5 11v5l-1.7 1.7a.75.75 0 0 0 .53 1.28h16.34a.75.75 0 0 0 .53-1.28L19 16Z"/>
+			</svg>
+		</button>
+		<button type="button" class="btn btn--primary">Login</button>
+	</div>
+</div>

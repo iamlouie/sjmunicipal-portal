@@ -21,6 +21,7 @@
 		</button>
 		<form *ngIf="showSearch" (ngSubmit)="submitSearch()" class="header-search" role="search" aria-label="Site search">
 			<input #searchInput type="text" [(ngModel)]="query" name="q" placeholder="Search..." autocomplete="off" class="header-search__input" aria-label="Search query" (input)="onInput()" (blur)="handleBlur()" (keydown.escape)="handleEscape()" />
+			<button *ngIf="query" type="button" class="header-search__clearBtn" aria-label="Clear search" (mousedown)="$event.preventDefault()" (click)="clearSearch()">&times;</button>
 		</form>
 		<button type="button" class="btn btn--ghost" aria-label="Notifications">
 			<svg class="icon icon-bell" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">

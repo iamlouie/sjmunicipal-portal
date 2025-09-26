@@ -32,6 +32,13 @@ export class HeaderComponent {
     console.log('Searching for:', this.query);
   }
 
+  clearSearch(): void {
+    this.query = '';
+    // Refocus input and restart inactivity timer so it can auto-close again if left empty
+    setTimeout(() => this.searchInput?.nativeElement.focus(), 0);
+    this.startInactivityTimer();
+  }
+
   onInput(): void {
     // If user starts typing, keep it open and reset inactivity timer
     this.startInactivityTimer();

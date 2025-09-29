@@ -1,0 +1,393 @@
+<div class="section-head">
+  <h2 class="welcome-head animate-in" id="residents-heading">Municipal <em>Residents</em></h2>
+</div>
+<div class="intro-bar residents__intro animate-in-delayed" id="residents-intro">
+  <p class="intro-bar__text">Manage citizen records, household profiles, and demographic insights for effective community services.</p>
+</div>
+<section class="residents" aria-labelledby="residents-heading" aria-describedby="residents-intro">
+  <div *ngIf="loading" class="placeholder">Loading residents…</div>
+  <div *ngIf="error && !loading" class="placeholder" role="alert">{{ error }}</div>
+  <div *ngIf="!loading && !error">
+    <div class="notice-reopen-wrap" *ngIf="!showNotice">
+      <button type="button" class="notice-reopen" (click)="reopenNotice()" aria-label="Open important notice about resident data">ℹ️</button>
+    </div>
+    <div class="filters-bar animate-in">
+      <div class="filters-bar__actions">
+        <!-- Move filter toggle to its own left-aligned wrapper for clarity -->
+        <div class="filters-bar__left">
+          <button type="button" class="filter-toggle" (click)="toggleFilters()" [attr.aria-expanded]="showFilters" [class.filter-toggle--active]="hasActiveFilters" [attr.aria-label]="hasActiveFilters ? 'Filters active: ' + activeFilterCount + ' applied. Toggle filter panel' : 'Toggle filter panel'">
+            <span class="btn-icon" aria-hidden="true">🔍</span>
+            <span class="btn-label">Filter</span>
+            <span *ngIf="hasActiveFilters" class="filter-badge" aria-hidden="true">{{ activeFilterCount }}</span>
+          </button>
+        </div>
+        <div class="filters-bar__right" *ngIf="isAdmin">
+          <button type="button" class="add-btn" (click)="openCreate()" aria-label="Add new resident">
+            <span class="btn-icon" aria-hidden="true">➕</span>
+            <span class="btn-label">Add Resident</span>
+          </button>
+        </div>
+      </div>
+      <div class="filters-panel" *ngIf="showFilters" role="region" aria-label="Residents filters">
+        <form (ngSubmit)="$event.preventDefault(); applyFilters();" class="filters-form">
+          <div class="filter-field">
+            <label for="fName">Name</label>
+            <div class="input-wrap">
+              <input id="fName" type="text" [(ngModel)]="filterName" name="filterName" (input)="onNameInput($any($event.target).value)" placeholder="Search name" />
+              <button *ngIf="filterName" type="button" class="clear-btn" (click)="onNameInput('')" aria-label="Clear name filter">×</button>
+            </div>
+          </div>
+          <div class="filter-field">
+            <label for="fBrgy">Barangay</label>
+            <div class="input-wrap">
+              <select id="fBrgy" [(ngModel)]="filterBarangay" name="filterBarangay" (change)="applyFilters()">
+                <option value="">Any</option>
+                <option *ngFor="let b of uniqueBarangays" [value]="b">{{ b }}</option>
+              </select>
+              <button *ngIf="filterBarangay" type="button" class="clear-btn" (click)="filterBarangay=''; applyFilters();" aria-label="Clear barangay filter">×</button>
+            </div>
+          </div>
+          <div class="filter-field">
+            <label for="fOcc">Occupation</label>
+            <div class="input-wrap">
+              <input id="fOcc" type="text" [(ngModel)]="filterOccupation" name="filterOccupation" (input)="applyFilters()" placeholder="e.g. Farmer" />
+              <button *ngIf="filterOccupation" type="button" class="clear-btn" (click)="filterOccupation=''; applyFilters();" aria-label="Clear occupation filter">×</button>
+            </div>
+          </div>
+          <div class="filter-field">
+            <label for="fCivil">Civil Status</label>
+            <div class="input-wrap">
+              <select id="fCivil" [(ngModel)]="filterCivilStatus" name="filterCivilStatus" (change)="applyFilters()">
+                <option value="">Any</option>
+                <option *ngFor="let cs of uniqueCivilStatuses" [value]="cs">{{ cs }}</option>
+              </select>
+              <button *ngIf="filterCivilStatus" type="button" class="clear-btn" (click)="filterCivilStatus=''; applyFilters();" aria-label="Clear civil status filter">×</button>
+            </div>
+          </div>
+          <div class="filter-field">
+            <label for="fStatus">Record Status</label>
+            <div class="input-wrap">
+              <select id="fStatus" [(ngModel)]="filterStatus" name="filterStatus" (change)="applyFilters()">
+                <option value="">Any</option>
+                <option value="Active">Active</option>
+                <option value="Deceased">Deceased</option>
+              </select>
+              <button *ngIf="filterStatus" type="button" class="clear-btn" (click)="filterStatus=''; applyFilters();" aria-label="Clear record status filter">×</button>
+            </div>
+          </div>
+          <div class="filter-field">
+            <label for="fGender">Gender</label>
+            <div class="input-wrap">
+              <select id="fGender" [(ngModel)]="filterGender" name="filterGender" (change)="applyFilters()">
+                <option value="">Any</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              <button *ngIf="filterGender" type="button" class="clear-btn" (click)="filterGender=''; applyFilters();" aria-label="Clear gender filter">×</button>
+            </div>
+          </div>
+          <div class="filter-field">
+            <label>Age Range</label>
+            <div class="age-range">
+              <input type="number" min="0" [(ngModel)]="filterAgeMin" name="filterAgeMin" (input)="applyFilters()" placeholder="Min" />
+              <span class="age-range__sep">–</span>
+              <input type="number" min="0" [(ngModel)]="filterAgeMax" name="filterAgeMax" (input)="applyFilters()" placeholder="Max" />
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button type="button" class="filter-reset" (click)="resetFilters()">Reset</button>
+            <span class="results-count" aria-live="polite">{{ filtered.length }} result{{ filtered.length===1 ? '' : 's' }}</span>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="table-wrap" role="region" aria-label="Residents table container">
+      <table class="res-table" aria-describedby="residents-intro">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Middle Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Age</th>
+            <th scope="col">Gender</th>
+            <th scope="col">Occupation</th>
+            <th scope="col">Barangay</th>
+            <th scope="col">Civil Status</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="filtered.length > 0; else noResTpl">
+            <tr *ngFor="let r of residentsLimited; let i = index; trackBy: trackByResident">
+              <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td>{{ r.firstName }}</td>
+              <td>{{ r.middleName }}</td>
+              <td>{{ r.lastName }}</td>
+              <td>{{ r.age }}</td>
+              <td>{{ r.gender }}</td>
+              <td>{{ r.occupation }}</td>
+              <td>{{ r.barangay }}</td>
+              <td>{{ r.civilStatus }}</td>
+              <td>
+                <span class="status-chip" [class.status-chip--deceased]="r.status==='Deceased'">{{ r.status }}</span>
+              </td>
+              <td><button type="button" class="view-btn" (click)="open(r)" [attr.aria-label]="'View resident '+ r.firstName + ' ' + r.lastName">View</button></td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noResTpl>
+      <tr class="no-results-row" role="status" aria-live="polite">
+        <td colspan="10">
+          <div class="no-results__box in-table">
+            <div class="no-results__icon" aria-hidden="true">🔎</div>
+            <h3 class="no-results__title">No matching residents</h3>
+            <p class="no-results__text">Try adjusting or clearing your filters to broaden the results.</p>
+            <button type="button" class="no-results__reset" (click)="resetFilters()" *ngIf="hasActiveFilters">Reset Filters</button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <div class="table-actions" *ngIf="residents.length > pageSize">
+      <button type="button" class="page-btn nav" (click)="prev()" [disabled]="currentPage===1" aria-label="Previous page">‹</button>
+  <ng-container *ngFor="let p of pages; trackBy: trackByPage">
+        <button type="button" class="page-btn" [class.page-btn--active]="p===currentPage" (click)="goTo(p)" [attr.aria-current]="p===currentPage ? 'page' : null">{{ p }}</button>
+      </ng-container>
+      <button type="button" class="page-btn nav" (click)="next()" [disabled]="currentPage===totalPages" aria-label="Next page">›</button>
+    </div>
+  </div>
+</section>
+
+<!-- Modal -->
+<!-- Important Notice Modal -->
+<div class="modal-backdrop" *ngIf="showNotice" aria-hidden="true"></div>
+<div class="modal notice-modal" *ngIf="showNotice" role="dialog" aria-modal="true" aria-labelledby="residents-notice-title">
+  <div class="modal__inner notice-modal__inner">
+    <div class="notice-strip" aria-hidden="true"></div>
+    <h3 class="modal__title notice-modal__title" id="residents-notice-title"><span class="notice-icon" aria-hidden="true">⚠️</span> Important Notice</h3>
+    <div class="modal__body notice-modal__body">
+      <p><strong>Data Integrity Reminder:</strong> Please verify a resident does not already exist before adding a new record. Duplicate entries can affect reports and analytics.</p>
+      <ul class="notice-points">
+        <li>Search by full name and barangay first.</li>
+        <li>Update existing records instead of creating new duplicates.</li>
+        <li>Mark status accurately (Active / Deceased).</li>
+      </ul>
+      <label class="notice-checkbox"><input type="checkbox" [(ngModel)]="noticeDontShow" /> Don't show again automatically</label>
+      <p class="notice-small" *ngIf="noticeDontShow">This notice will be skipped next time.</p>
+      <p class="notice-small" *ngIf="!noticeDontShow">This notice will appear again on next visit.</p>
+    </div>
+    <div *ngIf="pendingCreate; else plainNoticeFooter">
+      <div class="notice-hint" id="notice-hint-text">Click Continue to proceed to the Add Resident form. Review the guidance above before continuing.</div>
+      <div class="modal__footer notice-modal__footer with-cancel" aria-describedby="notice-hint-text">
+        <button type="button" class="notice-cancel" (click)="cancelPendingCreate()">Cancel</button>
+        <button type="button" class="modal__btn modal__btn--primary" (click)="dismissNotice(true)">Continue</button>
+      </div>
+    </div>
+    <ng-template #plainNoticeFooter>
+      <div class="modal__footer notice-modal__footer single-action">
+        <button type="button" class="modal__btn modal__btn--primary" (click)="dismissNotice(true)">Continue</button>
+      </div>
+    </ng-template>
+  </div>
+</div>
+<div class="modal-backdrop" *ngIf="showModal" (click)="close()" aria-hidden="true"></div>
+<div class="modal" *ngIf="showModal && selected as sel" role="dialog" aria-modal="true" [attr.aria-labelledby]="'resident-title-' + sel.id">
+  <div class="modal__inner">
+    <div class="modal__section-title" [id]="'resident-title-' + sel.id">
+      <span class="modal__icon" aria-hidden="true">👤</span>
+      RESIDENT PROFILE
+      <button type="button" class="modal__close" (click)="close()" aria-label="Close resident profile">×</button>
+    </div>
+    <h3 class="modal__title" *ngIf="!editing">{{ sel.firstName }} {{ sel.middleName }} {{ sel.lastName }}</h3>
+    <form class="create-form" *ngIf="editing" (ngSubmit)="submitEditProfile()" novalidate [class.form--dirty]="isEditDirty">
+      <div class="form__row form__row--inline">
+        <div>
+          <label for="edFirst">First Name <span class="req" aria-hidden="true">*</span></label>
+          <input id="edFirst" name="edFirst" type="text" required [(ngModel)]="editModel.firstName" (ngModelChange)="markEditChanged('firstName')" [class.field-changed]="editChanged['firstName']" />
+        </div>
+        <div>
+          <label for="edMiddle">Middle Name</label>
+          <input id="edMiddle" name="edMiddle" type="text" [(ngModel)]="editModel.middleName" (ngModelChange)="markEditChanged('middleName')" [class.field-changed]="editChanged['middleName']" />
+        </div>
+        <div>
+          <label for="edLast">Last Name <span class="req" aria-hidden="true">*</span></label>
+          <input id="edLast" name="edLast" type="text" required [(ngModel)]="editModel.lastName" (ngModelChange)="markEditChanged('lastName')" [class.field-changed]="editChanged['lastName']" />
+        </div>
+      </div>
+      <div class="form__row form__row--inline">
+        <div>
+          <label for="edBirthday">Birthday</label>
+          <input id="edBirthday" name="edBirthday" type="date" [(ngModel)]="editModel.birthday" (ngModelChange)="editModel.birthday = $event; markEditChanged('birthday')" [class.field-changed]="editChanged['birthday']" />
+        </div>
+        <div>
+          <label for="edGender">Gender <span class="req" aria-hidden="true">*</span></label>
+          <select id="edGender" name="edGender" required [(ngModel)]="editModel.gender" (ngModelChange)="markEditChanged('gender')" [class.field-changed]="editChanged['gender']">
+            <option value="" disabled>Select gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="edOcc">Occupation</label>
+          <input id="edOcc" name="edOcc" type="text" [(ngModel)]="editModel.occupation" (ngModelChange)="markEditChanged('occupation')" [class.field-changed]="editChanged['occupation']" />
+        </div>
+        <div>
+          <label for="edStreet">Street</label>
+          <input id="edStreet" name="edStreet" type="text" [(ngModel)]="editModel.street" placeholder="Street / Sitio" (ngModelChange)="markEditChanged('street')" [class.field-changed]="editChanged['street']" />
+        </div>
+      </div>
+      <div class="form__row form__row--inline">
+        <div>
+          <label for="edCivil">Civil Status <span class="req" aria-hidden="true">*</span></label>
+          <select id="edCivil" name="edCivil" required [(ngModel)]="editModel.civilStatus" (ngModelChange)="markEditChanged('civilStatus')" [class.field-changed]="editChanged['civilStatus']">
+            <option value="" disabled>Select status</option>
+            <option>Single</option>
+            <option>Married</option>
+            <option>Widowed</option>
+            <option>Separated</option>
+          </select>
+        </div>
+        <div>
+          <label for="edStatus">Record Status <span class="req" aria-hidden="true">*</span></label>
+          <select id="edStatus" name="edStatus" required [(ngModel)]="editModel.status" (ngModelChange)="markEditChanged('status')" [class.field-changed]="editChanged['status']">
+            <option value="Active">Active</option>
+            <option value="Deceased">Deceased</option>
+          </select>
+        </div>
+        <div>
+          <label for="edBarangay">Barangay <span class="req" aria-hidden="true">*</span></label>
+          <select id="edBarangay" name="edBarangay" required [(ngModel)]="editModel.barangay" (ngModelChange)="markEditChanged('barangay')" [class.field-changed]="editChanged['barangay']">
+            <option value="" disabled>Select barangay</option>
+            <option *ngFor="let b of barangayOptions" [value]="b">{{ b }}</option>
+          </select>
+        </div>
+          <div class="contact-field">
+            <label for="edContact">Contact Number</label>
+            <input id="edContact" name="edContact" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="11" [(ngModel)]="editModel.contactNumber" (input)="sanitizeEditContact(); markEditChanged('contactNumber')" [class.field-changed]="editChanged['contactNumber']" placeholder="09XXXXXXXXX" />
+          </div>
+          <div class="age-field">
+            <label>Age (auto)</label>
+            <div class="computed-age" [attr.aria-live]="editModel.birthday ? 'polite' : null">
+              {{ editModel.birthday ? (editModel.age ?? selected.age) : selected.age }}
+            </div>
+          </div>
+      </div>
+      <div class="modal__footer">
+        <button type="button" class="modal__btn modal__btn--secondary" (click)="cancelEditProfile()" [disabled]="updating">Cancel</button>
+        <button type="submit" class="modal__btn modal__btn--primary" [disabled]="updating || !isEditDirty || !editModel.firstName || !editModel.lastName || !editModel.gender || !editModel.barangay || !editModel.civilStatus || !editModel.status">{{ updating ? 'Saving...' : 'Save Changes' }}</button>
+      </div>
+      <p class="form__legend" *ngIf="isEditDirty">Highlighted fields have unsaved changes.</p>
+    </form>
+    <div class="modal__body" *ngIf="!editing">
+      <p><strong>Age:</strong> {{ sel.age }}</p>
+      <p><strong>Gender:</strong> {{ sel.gender || '—' }}</p>
+      <p><strong>Birthday:</strong> {{ sel.birthday || '—' }}</p>
+      <p><strong>Contact:</strong> {{ sel.contactNumber || '—' }}</p>
+      <p><strong>Occupation:</strong> {{ sel.occupation || '—' }}</p>
+      <p><strong>Barangay:</strong> {{ sel.barangay }}</p>
+      <p><strong>Civil Status:</strong> {{ sel.civilStatus }}</p>
+      <p><strong>Status:</strong> <span class="status-chip" [class.status-chip--deceased]="sel.status==='Deceased'">{{ sel.status }}</span></p>
+    </div>
+    <div class="modal__footer" *ngIf="!editing">
+      <button type="button" class="modal__btn modal__btn--primary" *ngIf="isAdmin" (click)="startEdit()">Edit</button>
+      <button type="button" class="modal__btn modal__btn--secondary" (click)="close()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Resident Modal -->
+<div class="modal-backdrop" *ngIf="showCreate" aria-hidden="true"></div>
+<div class="modal" *ngIf="showCreate" role="dialog" aria-modal="true" aria-labelledby="create-resident-title">
+  <div class="modal__inner">
+    <div class="modal__section-title" id="create-resident-title">
+      <span class="modal__icon" aria-hidden="true">➕</span>
+      ADD RESIDENT
+      <button type="button" class="modal__close" (click)="cancelCreate()" aria-label="Close add resident form">×</button>
+    </div>
+    <form (ngSubmit)="saveResident()" class="create-form" #createForm="ngForm">
+      <div class="form__row form__row--inline">
+        <div>
+          <label for="crFirst">First Name <span class="req" aria-hidden="true">*</span></label>
+          <input id="crFirst" name="crFirst" type="text" required [(ngModel)]="createModel.firstName" />
+        </div>
+        <div>
+          <label for="crMiddle">Middle Name</label>
+          <input id="crMiddle" name="crMiddle" type="text" [(ngModel)]="createModel.middleName" />
+        </div>
+        <div>
+          <label for="crLast">Last Name <span class="req" aria-hidden="true">*</span></label>
+          <input id="crLast" name="crLast" type="text" required [(ngModel)]="createModel.lastName" />
+        </div>
+      </div>
+      <div class="form__row form__row--inline">
+        <div>
+          <label for="crBirthday">Birthday</label>
+          <input id="crBirthday" name="crBirthday" type="date" [ngModel]="createModel.birthday" (ngModelChange)="onBirthdayChange($event)" />
+        </div>
+        <div>
+          <label for="crGender">Gender <span class="req" aria-hidden="true">*</span></label>
+          <select id="crGender" name="crGender" required [(ngModel)]="createModel.gender">
+            <option value="" disabled>Select gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="crOcc">Occupation</label>
+          <input id="crOcc" name="crOcc" type="text" [(ngModel)]="createModel.occupation" />
+        </div>
+        <div>
+          <label for="crStreet">Street</label>
+          <input id="crStreet" name="crStreet" type="text" [(ngModel)]="createModel.street" placeholder="Street / Sitio" />
+        </div>
+      </div>
+      <div class="form__row form__row--inline">
+        <div>
+          <label for="crCivil">Civil Status <span class="req" aria-hidden="true">*</span></label>
+          <select id="crCivil" name="crCivil" required [(ngModel)]="createModel.civilStatus">
+            <option value="" disabled>Select status</option>
+            <option>Single</option>
+            <option>Married</option>
+            <option>Widowed</option>
+            <option>Separated</option>
+          </select>
+        </div>
+        <div>
+          <label for="crStatus">Record Status <span class="req" aria-hidden="true">*</span></label>
+          <select id="crStatus" name="crStatus" required [(ngModel)]="createModel.status">
+            <option value="Active">Active</option>
+            <option value="Deceased">Deceased</option>
+          </select>
+        </div>
+        <div>
+          <label for="crBarangay">Barangay <span class="req" aria-hidden="true">*</span></label>
+          <select id="crBarangay" name="crBarangay" required [(ngModel)]="createModel.barangay">
+            <option value="" disabled>Select barangay</option>
+            <option *ngFor="let b of barangayOptions" [value]="b">{{ b }}</option>
+          </select>
+        </div>
+          <div class="contact-field">
+            <label for="crContact">Contact Number</label>
+            <input id="crContact" name="crContact" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="11" [(ngModel)]="createModel.contactNumber" (input)="sanitizeContact()" placeholder="09XXXXXXXXX" />
+          </div>
+          <div class="age-field">
+            <label>Age (auto)</label>
+            <div class="computed-age" [attr.aria-live]="createModel.birthday ? 'polite' : null">
+              {{ createModel.birthday ? createModel.age : '—' }}
+            </div>
+          </div>
+      </div>
+      <!-- Removed voter & 4Ps checkboxes -->
+      <div class="modal__footer">
+        <button type="button" class="modal__btn modal__btn--secondary" (click)="cancelCreate()">Cancel</button>
+        <button type="submit" class="modal__btn modal__btn--primary" [disabled]="!isCreateValid() || saving">{{ saving ? 'Saving...' : 'Save Resident' }}</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+:host { display: block; background: #243949; color: #c9d4db; font-size: .75rem; height: var(--footer-h); }
+
+.footer__inner {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 0 1.5rem;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	align-items: center;
+	justify-content: space-between;
+	height: 100%;
+}
+
+.footer__copy { margin: 0; }
+
+.footer__links { list-style: none; display: flex; gap: 1rem; margin: 0; padding: 0; }
+.footer__links a { color: #e2eaef; text-decoration: none; }
+.footer__links a:hover { text-decoration: underline; }

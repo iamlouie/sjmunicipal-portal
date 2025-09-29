@@ -1,0 +1,82 @@
+/* Removed external layout wrapper; heading now sits inside orgchart section like welcome section */
+/* Container */
+/* Further reduced --card-h (90px -> 84px) for ultra compact person cards */
+/* Added colored border/background variables for roles */
+.orgchart { --gap-y: 22px; --card-bg: #fff; --card-border: #d8e0e5; --accent: #2563eb; --accent-soft: #e1effe; --mayor-bg: #eff6ff; --vice-bg: #eef2ff; --councilor-border: #16a34a; --councilor-border-bg: #f0fdf4; --card-w: 158px; --card-h: 84px; max-width: 960px; margin: 40px auto 32px; padding: 22px 14px 22px 14px; position: relative; font-family: system-ui, Arial, sans-serif; }
+
+.orgchart__level { display: flex; justify-content: center; position: relative; }
+.orgchart__level + .orgchart__level { margin-top: var(--gap-y); }
+
+/* Cards */
+/* Heading borrowed from content component */
+.welcome-head { position: relative; margin: 0 0 1.25rem; font-size: clamp(1.15rem, 1.9vw + .6rem, 2.1rem); font-weight: 700; letter-spacing: .55px; color: #1e2766; line-height: 1.18; text-shadow: 0 2px 6px rgba(0,0,0,.05); padding-left: 1rem; }
+.welcome-head::before { content: ""; position: absolute; left: 0; top: 8%; width: 5px; height: 84%; border-radius: 3px; background: linear-gradient(180deg,#2563eb,#4f46e5 60%,#7c3aed); box-shadow: 0 0 0 1px rgba(255,255,255,.3), 0 4px 10px -3px rgba(0,0,0,.25); }
+.welcome-head em { font-style: normal; color: #2563eb; }
+/* Unified mobile welcome head sizing (matches residents) */
+@media (max-width: 640px) { .welcome-head { font-size: clamp(1.28rem, 2.8vw + .72rem, 2.15rem); } }
+/* Removed extra <=420px override */
+.orgchart__intro { margin: 0 0 1.15rem; font-size: clamp(.8rem, .45vw + .7rem, 1rem); line-height: 1.5; color: #475569; letter-spacing: .38px; max-width: 840px; padding-left: 1rem; position: relative; }
+.orgchart__intro::before { content: ""; position: absolute; left: 0; top: .55rem; width: 5px; height: calc(100% - .9rem); background: linear-gradient(180deg,#2563eb,#4f46e5 65%,#7c3aed); border-radius: 3px; opacity: .15; }
+@media (max-width: 640px) { .orgchart__intro { font-size: .78rem; line-height: 1.42; } }
+@media (max-width: 420px) { .orgchart__intro { font-size: .74rem; } }
+.person-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 0; width: var(--card-w); min-width: var(--card-w); min-height: var(--card-h); display: flex; flex-direction: column; align-items: stretch; gap: 0; position: relative; box-shadow: 0 2px 6px -2px rgba(0,0,0,.12); transition: box-shadow .25s, transform .25s; box-sizing: border-box; overflow: hidden; }
+.person-card:hover { box-shadow: 0 8px 20px -6px rgba(0,0,0,.18); transform: translateY(-2px); }
+.person-card--mayor { border: 2px solid var(--accent); background: var(--mayor-bg); }
+.person-card--vice { border: 2px solid #1d4ed8; background: var(--vice-bg); }
+.person-card--councilor { border: 2px solid var(--councilor-border); background: var(--councilor-border-bg); }
+
+/* Avatar height adjusted for 84px card height */
+.person-card__avatar { width: 100%; height: 74%; min-height: calc(var(--card-h) * 0.50); background: #e6eef7; color: #1e3a8a; font-weight: 600; display: flex; align-items: center; justify-content: center; font-size: 11px; letter-spacing: .5px; overflow: hidden; border-bottom: 1px solid var(--card-border); }
+.person-card__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.person-card__name { font-size: 14px; font-weight: 600; text-align: center; line-height: 1.1; }
+.person-card__body { display: flex; flex-direction: column; align-items: center; margin-top: 10px; padding: 1px 4px 2px; flex: 1; justify-content: flex-start; }
+.person-card__role { font-size: 9px; text-transform: uppercase; letter-spacing: .7px; color: #465661; font-weight: 600; text-align: center; width: 100%; line-height: 1.05; }
+
+/* Connectors */
+.orgchart__connector { width: 2px; background: #b5c3cc; margin: 0 auto; }
+.orgchart__connector--vertical { height: 24px; }
+.orgchart__connector--to-councilors { height: 28px; }
+
+/* Councilors grid */
+.councilors-grid { width: 100%; display: grid; gap: 17.6px 14.4px; grid-template-columns: repeat(4, 1fr); max-width: 880px; }
+.councilors-grid { justify-items: center; }
+.councilors-grid .person-card { min-width: var(--card-w); }
+
+/* Group label placed between Vice Mayor and Councilors */
+.orgchart__group-label { max-width: 360px; margin: 28px auto 10px; text-align: center; font-size: 16px; font-weight: 600; color: #1e3a8a; letter-spacing: .6px; background: #f1f7ff; border: 1px solid #c7d9e7; padding: 8px 14px 9px; border-radius: 8px; box-shadow: 0 2px 6px -2px rgba(0,0,0,.15); position: relative; }
+/* Optional small connector from label to councilors line */
+.orgchart__group-label::after { content: ""; position: absolute; left: 50%; bottom: -14px; transform: translateX(-50%); width: 2px; height: 14px; background: #b5c3cc; }
+
+/* Horizontal connector line above councilors */
+.orgchart__level--councilors { margin-top: 16px; }
+.orgchart__level--councilors::before { content: ""; position: absolute; top: -14px; left: 10%; right: 10%; height: 2px; background: #b5c3cc; }
+
+/* Little stems from line to each councilor */
+.councilors-grid { position: relative; }
+.councilors-grid > .person-card { position: relative; }
+.councilors-grid > .person-card::before { content: ""; position: absolute; top: -14px; left: 50%; height: 14px; width: 2px; transform: translateX(-50%); background: #b5c3cc; }
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+	.councilors-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 640px) {
+	/* Keep same card height on mobile to prevent avatar distortion; only narrow width */
+	.orgchart { --card-w: 145px; --gap-y: 14px; }
+	.person-card { padding: 0; gap: 0; }
+	/* Removed previous mobile override that shrank avatar (56%) causing visual jump */
+	.person-card__avatar { font-size: 11px; }
+	.person-card__body { margin-top: 2px; padding: 2px 4px 4px; }
+	.councilors-grid { grid-template-columns: repeat(2, 1fr); gap: 10px 8px; }
+	.orgchart__level--councilors::before { left: 14%; right: 14%; }
+}
+
+/* Accessibility focus */
+.person-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* Entrance animations (copied to match welcome head behavior) */
+@keyframes fadeSlideIn { 0% { opacity:0; transform: translateY(14px); } 55% { opacity:1; } 100% { opacity:1; transform: translateY(0); } }
+.animate-in { animation: fadeSlideIn .85s cubic-bezier(.16,.72,.29,1) both; }
+.animate-in-delayed { animation: fadeSlideIn .85s .18s cubic-bezier(.16,.72,.29,1) both; }
+@media (prefers-reduced-motion: reduce) { .animate-in, .animate-in-delayed { animation: fadeSlideIn .001s linear both; } }

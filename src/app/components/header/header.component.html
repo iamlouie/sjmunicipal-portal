@@ -1,33 +1,53 @@
 <div class="header__inner">
-	<div class="brand">
-		<!-- <span class="brand__logo" aria-hidden="true">🏛️</span> -->
-		<span class="brand__text">Cabalian Portal</span>
-	</div>
-	<nav class="main-nav" aria-label="Main navigation">
-		<ul class="main-nav__list">
-			<!-- Temporarily commented out navigation links
-			<li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
-			<li><a routerLink="/services" routerLinkActive="active">Services</a></li>
-			<li><a routerLink="/reports" routerLinkActive="active">Reports</a></li>
-			<li><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
-			-->
-		</ul>
-	</nav>
-	<div class="header__actions">
-		<button type="button" class="btn btn--ghost" aria-label="Search" title="Search" (click)="toggleSearch()" [attr.aria-expanded]="showSearch">
-			<svg class="icon icon-search" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
-				<path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0A4.5 4.5 0 1 1 14 9.5 4.505 4.505 0 0 1 9.5 14Z" />
-			</svg>
-		</button>
-		<form *ngIf="showSearch" (ngSubmit)="submitSearch()" class="header-search" role="search" aria-label="Site search">
-			<input #searchInput type="text" [(ngModel)]="query" name="q" placeholder="Search..." autocomplete="off" class="header-search__input" aria-label="Search query" (input)="onInput()" (blur)="handleBlur()" (keydown.escape)="handleEscape()" />
-			<button *ngIf="query" type="button" class="header-search__clearBtn" aria-label="Clear search" (mousedown)="$event.preventDefault()" (click)="clearSearch()">&times;</button>
-		</form>
-		<button type="button" class="btn btn--ghost" aria-label="Notifications">
-			<svg class="icon icon-bell" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
-				<path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11c0-3.07-1.64-5.64-4.5-6.32V4a2.5 2.5 0 0 0-5 0v.68C6.64 5.36 5 7.92 5 11v5l-1.7 1.7a.75.75 0 0 0 .53 1.28h16.34a.75.75 0 0 0 .53-1.28L19 16Z"/>
-			</svg>
-		</button>
-		<button type="button" class="btn btn--primary">Login</button>
-	</div>
+  <div class="brand" aria-label="Application title">
+    <span class="brand__text">Cabalian LGU Portal</span>
+  </div>
+  <nav class="main-nav" aria-label="Main navigation">
+    <ul class="main-nav__list">
+      <!-- Navigation items placeholder -->
+    </ul>
+  </nav>
+  <div class="flex-spacer" aria-hidden="true"></div>
+  <button type="button" class="btn btn--icon btn--ghost" aria-label="History" title="History" (click)="toggleHistory()">
+    <svg class="icon icon-history" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+      <path fill="currentColor" d="M13 3a9 9 0 1 0 8.485 6.002 1 1 0 1 0-1.932.518A7 7 0 1 1 12.999 5a6.96 6.96 0 0 1 4.95 2.05L15 10h6V4l-2.184 2.184A8.963 8.963 0 0 0 13 3Zm-1 5v5a1 1 0 0 0 .553.894l4 2a1 1 0 0 0 .894-1.788L14 12.382V8a1 1 0 1 0-2 0Z"/>
+    </svg>
+  </button>
+  <button type="button" class="btn btn--icon btn--ghost" aria-label="Notifications" title="Notifications">
+    <svg class="icon icon-bell" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+      <path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11c0-3.07-1.64-5.64-4.5-6.32V4a2.5 2.5 0 0 0-5 0v.68C6.64 5.36 5 7.92 5 11v5l-1.7 1.7a.75.75 0 0 0 .53 1.28h16.34a.75.75 0 0 0 .53-1.28L19 16Z"/>
+    </svg>
+    <!-- Optional badge: <span class="badge" aria-hidden="true">3</span> -->
+  </button>
+  <ng-container *ngIf="!auth.isAuthenticated(); else loggedIn">
+    <button type="button" class="btn btn--primary login-btn" (click)="openLogin()">Login</button>
+  </ng-container>
+  <ng-template #loggedIn>
+    <div class="user-chip" aria-label="Logged in user">
+      <span class="user-chip__name">{{ auth.user()?.username }}</span>
+  <button type="button" class="btn btn--sm btn--logout" (click)="logout()" aria-label="Logout">Logout</button>
+    </div>
+  </ng-template>
+  
 </div>
+
+<div class="history-panel" *ngIf="historyOpen" role="region" aria-label="Recent activity">
+  <div class="history-panel__header">
+    <span>History</span>
+    <button class="btn btn--ghost btn--sm" (click)="closeHistory()" aria-label="Close history">✕</button>
+  </div>
+  <ul class="history-list">
+    <li *ngFor="let item of history | slice:0:12" class="history-item">
+      <span class="history-item__icon" [class.add]="item.action==='add'" [class.update]="item.action==='update'" [class.delete]="item.action==='delete'"></span>
+      <div class="history-item__body">
+        <div class="history-item__text">{{ item.message }}</div>
+        <div class="history-item__meta">{{ item.when | date:'short' }}</div>
+      </div>
+    </li>
+    <li *ngIf="!history.length" class="history-item history-item--empty">No activity yet.</li>
+  </ul>
+</div>
+
+<app-login [open]="loginOpen" (closed)="closeLogin()" (loggedIn)="onLoggedIn($event)"></app-login>
+
+

@@ -1,1 +1,43 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles & design tokens */
+
+:root {
+	--color-bg: #f1f5f7;
+	--color-surface: #ffffff;
+	--color-border: #d8e0e5;
+	--color-text: #1d2d37;
+	--color-accent: #2f6fab;
+	--color-accent-hover: #1f588c;
+	--radius-sm: 3px;
+	--radius: 6px;
+	--shadow-sm: 0 1px 2px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.02);
+	--shadow: 0 4px 12px rgba(0,0,0,.08);
+	
+	/* Layout dimensions */
+	--header-h: 64px;
+	--footer-h: 54px;
+	--sidebar-w: 250px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { background: var(--color-bg); color: var(--color-text); line-height: 1.4; -webkit-font-smoothing: antialiased; }
+
+img, svg { max-width: 100%; height: auto; display: block; }
+
+button { font-family: inherit; }
+
+/* Utility classes */
+.card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1rem 1.1rem; box-shadow: var(--shadow-sm); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }
+
+/* Typography scaling */
+h1,h2,h3,h4 { line-height: 1.15; font-weight: 600; }
+h1 { font-size: clamp(1.6rem, 1.1rem + 1.2vw, 2.2rem); }
+h2 { font-size: clamp(1.3rem, 1rem + .8vw, 1.8rem); }
+h3 { font-size: 1.15rem; }
+
+a { color: var(--color-accent); }
+a:hover { color: var(--color-accent-hover); }
+
+/* Material icon placeholder (if not using actual icon font) */
+.material-symbols-outlined { font-family: 'Material Symbols Outlined', system-ui, sans-serif; font-size: 20px; line-height: 1; }

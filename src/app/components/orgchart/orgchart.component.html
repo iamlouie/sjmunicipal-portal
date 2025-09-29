@@ -1,0 +1,56 @@
+<h2 class="welcome-head animate-in" id="orgchart-heading">Municipal Organization <em>Chart</em></h2>
+<p class="orgchart__intro animate-in-delayed">A concise view of the current municipal leadership, showing the Mayor, Vice Mayor and the members of the Sangguniang Bayan for quick reference.</p>
+<section class="orgchart" aria-labelledby="orgchart-heading">
+	<!-- Level 1: Mayor -->
+	<div class="orgchart__level orgchart__level--mayor">
+		<div class="person-card person-card--mayor">
+			<div class="person-card__avatar" aria-hidden="true">
+				<img *ngIf="mayor.photo; else mayorInitials" [src]="mayor.photo" [alt]="mayor.name" />
+				<ng-template #mayorInitials>{{ mayor.initials }}</ng-template>
+			</div>
+			<div class="person-card__body">
+				<div class="person-card__name">{{ mayor.name }}</div>
+				<div class="person-card__role">{{ mayor.role }}</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Connector from Mayor to Vice Mayor -->
+	<div class="orgchart__connector orgchart__connector--vertical"></div>
+
+	<!-- Level 2: Vice Mayor -->
+	<div class="orgchart__level orgchart__level--vice">
+		<div class="person-card person-card--vice">
+			<div class="person-card__avatar" aria-hidden="true">
+				<img *ngIf="viceMayor.photo; else viceInitials" [src]="viceMayor.photo" [alt]="viceMayor.name" />
+				<ng-template #viceInitials>{{ viceMayor.initials }}</ng-template>
+			</div>
+			<div class="person-card__body">
+				<div class="person-card__name">{{ viceMayor.name }}</div>
+				<div class="person-card__role">{{ viceMayor.role }}</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Group label placed directly below Vice Mayor -->
+	<div class="orgchart__group-label" aria-hidden="true">Sangguniang Bayan</div>
+
+	<!-- Connector from Vice Mayor to Councilors row -->
+	<div class="orgchart__connector orgchart__connector--vertical orgchart__connector--to-councilors"></div>
+
+	<!-- Level 3: Councilors -->
+	<div class="orgchart__level orgchart__level--councilors">
+		<div class="councilors-grid">
+			<div class="person-card person-card--councilor" *ngFor="let c of councilors; trackBy: trackByCouncilor">
+				<div class="person-card__avatar" aria-hidden="true">
+					<img *ngIf="c.photo; else cInitials" [src]="c.photo" [alt]="c.name" />
+					<ng-template #cInitials>{{ c.initials }}</ng-template>
+				</div>
+				<div class="person-card__body">
+					<div class="person-card__name">{{ c.name }}</div>
+					<div class="person-card__role">{{ c.role }}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,47 @@
+<section class="welcome position-relative">
+  <div class="inner hero-panel">
+  <h2 class="welcome-head animate-in" aria-label="Welcome message">Welcome to San Juan <em>Cabalian</em> Municipal Portal</h2>
+  <p class="welcome-tag animate-in-delayed">Streamlining services, insights, and operations for our community.</p>
+  <div class="c-carousel" role="region" aria-label="Municipal showcase" (mouseenter)="pause()" (mouseleave)="resume()">
+      <div class="c-slides">
+        <figure *ngFor="let s of slides; let i = index" class="c-slide" [class.active]="i===current" [attr.aria-hidden]="i===current ? 'false':'true'">
+          <img [src]="s.src" [alt]="s.alt" />
+          <figcaption class="c-caption d-none d-sm-inline-block">
+            <h5 class="c-cap-title">{{ s.title || s.alt }}</h5>
+            <p class="c-cap-tag" *ngIf="s.tagline">{{ s.tagline }}</p>
+          </figcaption>
+        </figure>
+      </div>
+      <button type="button" class="c-nav prev" (click)="prev()" aria-label="Previous slide">‹</button>
+      <button type="button" class="c-nav next" (click)="next()" aria-label="Next slide">›</button>
+      <div class="c-dots" role="tablist">
+        <button *ngFor="let s of slides; let i = index" type="button" class="c-dot" [class.active]="i===current" (click)="go(i)" [attr.aria-label]="'Go to slide ' + (i+1)" [attr.aria-selected]="i===current"></button>
+      </div>
+  <span class="visually-hidden" aria-live="polite">Slide {{ current+1 }} of {{ slides.length }}: {{ slides[current].alt }}</span>
+    </div>
+  </div>
+</section>
+<section class="dashboard-cards" aria-label="Key metrics overview">
+  <div class="cards-grid">
+    <div class="card metric">
+      <h3><span class="metric__icon" aria-hidden="true">👥</span>Population</h3>
+      <p class="metric__value">42,318</p>
+      <p class="metric__delta positive">+2.1% YoY</p>
+    </div>
+    <div class="card metric">
+      <h3><span class="metric__icon" aria-hidden="true">📄</span>Active Permits</h3>
+      <p class="metric__value">1,284</p>
+      <p class="metric__delta neutral">On Track</p>
+    </div>
+    <div class="card metric">
+      <h3><span class="metric__icon" aria-hidden="true">🛠️</span>Open Job Orders</h3>
+      <p class="metric__value">87</p>
+      <p class="metric__delta warning">+12 pending</p>
+    </div>
+    <div class="card metric">
+      <h3><span class="metric__icon" aria-hidden="true">📬</span>Resident Requests</h3>
+      <p class="metric__value">56</p>
+      <p class="metric__delta">Updated hourly</p>
+    </div>
+  </div>
+</section>

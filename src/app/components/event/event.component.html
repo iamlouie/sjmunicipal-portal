@@ -1,0 +1,108 @@
+<div class="section-head">
+	<h2 class="welcome-head animate-in" id="event-heading">Municipal <em>Events</em></h2>
+</div>
+<div class="intro-bar event__intro animate-in-delayed" id="event-intro">
+	<p class="intro-bar__text">Discover upcoming activities, programs, and community gatherings.</p>
+</div>
+<section class="event" aria-labelledby="event-heading" aria-describedby="event-intro">
+	<div class="event__list" role="list">
+		<!-- Add Event Card (admin only) -->
+		<article class="event-card event-card--add" role="listitem" *ngIf="isAdmin">
+			<button type="button" class="add-card-btn" (click)="openCreateModal()" [disabled]="loading || creating" aria-label="Add new event">
+				<span class="add-card-btn__icon" aria-hidden="true">➕</span>
+				<span class="add-card-btn__text">{{ creating ? 'Creating…' : 'Add Event' }}</span>
+			</button>
+		</article>
+		<article class="event-card" role="listitem" *ngFor="let ev of sortedEvents; trackBy: trackByEvent" [class.event-card--past]="isPast(ev)" [class.event-card--today]="isToday(ev)" [class.event-card--near]="isNearUpcoming(ev)" [attr.data-days]="isNearUpcoming(ev) ? daysUntil(ev) : null">
+			<h3 class="event-card__title">{{ ev.title }}</h3>
+			<p class="event-card__meta">Scheduled <time [attr.datetime]="ev.date">{{ ev.dateDisplay }}</time> • {{ ev.time }}</p>
+			<p class="event-card__excerpt">{{ ev.excerpt }}</p>
+			<button class="event-card__action" type="button" (click)="openModal(ev)" [attr.aria-label]="'View details for ' + ev.title">View Details</button>
+		</article>
+	</div>
+</section>
+
+<div class="modal-backdrop" *ngIf="showModal" (click)="closeModal()" aria-hidden="true"></div>
+<div class="modal" *ngIf="showModal && selected as sel" role="dialog" aria-modal="true" [attr.aria-labelledby]="'event-modal-title-' + sel.id">
+	<div class="modal__inner">
+		<p class="modal__section-title" aria-label="Event details section"><span class="modal__icon" aria-hidden="true">📅</span> Event Details</p>
+		<form *ngIf="editing; else viewMode" class="create-form" (ngSubmit)="submitEditForm()" novalidate>
+			<div class="form__row">
+				<label for="edit-ev-title">Title <span aria-hidden="true" class="req">*</span></label>
+				<input id="edit-ev-title" name="title" type="text" required [(ngModel)]="editModel.title" [class.changed]="selected && editModel.title !== selected.title" />
+				<p class="form__err" *ngIf="editSubmitted && !editModel.title">Title is required.</p>
+			</div>
+			<div class="form__row form__row--inline">
+				<div>
+					<label for="edit-ev-date">Date <span aria-hidden="true" class="req">*</span></label>
+					<input id="edit-ev-date" name="date" type="date" required [(ngModel)]="editModel.date" [class.changed]="selected && editModel.date !== selected.date" />
+				</div>
+				<div>
+					<label for="edit-ev-time">Time <span aria-hidden="true" class="req">*</span></label>
+					<input id="edit-ev-time" name="time" type="time" required [(ngModel)]="editModel.time" [class.changed]="selected && editModel.time !== selected.time" />
+				</div>
+			</div>
+			<div class="form__row">
+				<label for="edit-ev-location">Location</label>
+				<input id="edit-ev-location" name="location" type="text" [(ngModel)]="editModel.location" [class.changed]="selected && editModel.location !== selected.location" />
+			</div>
+			<div class="form__row">
+				<label for="edit-ev-desc">Description / Excerpt <span aria-hidden="true" class="req">*</span></label>
+				<textarea id="edit-ev-desc" name="excerpt" rows="4" required [(ngModel)]="editModel.excerpt" [class.changed]="selected && editModel.excerpt !== selected.excerpt"></textarea>
+				<p class="form__err" *ngIf="editSubmitted && !editModel.excerpt">Description is required.</p>
+			</div>
+			<p class="form__legend" *ngIf="isEditDirty">Highlighted fields have unsaved changes.</p>
+			<div class="form__actions">
+				<button type="button" class="btn btn--secondary" (click)="cancelEdit()" [disabled]="updateSaving">Cancel</button>
+				<button type="submit" class="btn btn--primary" [disabled]="updateSaving || !isEditDirty">{{ updateSaving ? 'Saving…' : 'Save Changes' }}</button>
+			</div>
+		</form>
+		<ng-template #viewMode>
+			<h3 class="modal__title" [id]="'event-modal-title-' + sel.id">{{ sel.title }}</h3>
+			<p class="modal__meta">Scheduled <time [attr.datetime]="sel.date">{{ sel.dateDisplay }}</time> • {{ sel.time }}</p>
+			<p class="modal__body">{{ sel.excerpt }}</p>
+			<div class="modal__footer" role="group" aria-label="Event actions">
+				<button *ngIf="isAdmin" type="button" class="modal__btn modal__btn--primary" (click)="startEdit()" aria-label="Edit event">Edit</button>
+				<button type="button" class="modal__btn modal__btn--secondary" (click)="closeModal()" aria-label="Close dialog">Close</button>
+			</div>
+		</ng-template>
+	</div>
+</div>
+
+<!-- Create Event Modal -->
+<div class="modal-backdrop" *ngIf="showCreate" (click)="cancelCreate()" aria-hidden="true"></div>
+<div class="modal" *ngIf="showCreate" role="dialog" aria-modal="true" aria-labelledby="create-event-title">
+	<div class="modal__inner">
+		<p class="modal__section-title" id="create-event-title"><span class="modal__icon" aria-hidden="true">➕</span> New Event</p>
+		<form class="create-form" (ngSubmit)="submitCreateForm()" novalidate>
+			<div class="form__row">
+				<label for="new-ev-title">Title <span aria-hidden="true" class="req">*</span></label>
+				<input id="new-ev-title" name="title" type="text" required [(ngModel)]="createModel.title" />
+				<p class="form__err" *ngIf="createSubmitted && !createModel.title">Title is required.</p>
+			</div>
+			<div class="form__row form__row--inline">
+				<div>
+					<label for="new-ev-date">Date <span aria-hidden="true" class="req">*</span></label>
+					<input id="new-ev-date" name="date" type="date" required [(ngModel)]="createModel.date" />
+				</div>
+				<div>
+					<label for="new-ev-time">Time <span aria-hidden="true" class="req">*</span></label>
+					<input id="new-ev-time" name="time" type="time" required [(ngModel)]="createModel.time" />
+				</div>
+			</div>
+			<div class="form__row">
+				<label for="new-ev-location">Location</label>
+				<input id="new-ev-location" name="location" type="text" [(ngModel)]="createModel.location" />
+			</div>
+			<div class="form__row">
+				<label for="new-ev-desc">Description / Excerpt <span aria-hidden="true" class="req">*</span></label>
+				<textarea id="new-ev-desc" name="excerpt" rows="4" required [(ngModel)]="createModel.excerpt"></textarea>
+				<p class="form__err" *ngIf="createSubmitted && !createModel.excerpt">Description is required.</p>
+			</div>
+			<div class="form__actions">
+				<button type="button" class="btn btn--secondary" (click)="cancelCreate()" [disabled]="creating">Cancel</button>
+				<button type="submit" class="btn btn--primary" [disabled]="creating || !createModel.title || !createModel.date || !createModel.time || !createModel.excerpt">{{ creating ? 'Saving…' : 'Create Event' }}</button>
+			</div>
+		</form>
+	</div>
+</div>

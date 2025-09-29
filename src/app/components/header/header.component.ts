@@ -1,77 +1,88 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
-import { NgIf } from '@angular/common';
+import { Component, ElementRef, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
+import { HistoryService, HistoryEntry as StoredEntry } from './history.service';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LoginComponent } from '../login/login.component';
+import { AuthService } from '../../auth.service';
+import { ToastService } from '../../toast.service';
+interface HistoryEntry { action: 'add' | 'update' | 'delete' | 'other'; message: string; when: Date; }
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [FormsModule, NgIf],
+  imports: [CommonModule, DatePipe, FormsModule, LoginComponent],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
-  showSearch = false;
-  query = '';
-  @ViewChild('searchInput') searchInput?: ElementRef<HTMLInputElement>;
-  private inactivityTimer: any; // NodeJS.Timeout or number (browser)
-  private readonly INACTIVITY_MS = 8000; // collapse after 8s of no typing while empty
+  historyOpen = false;
+  history: HistoryEntry[] = [];
+  loginOpen = false;
 
-  toggleSearch(): void {
-    this.showSearch = !this.showSearch;
-    if (this.showSearch) {
-      // Delay to allow *ngIf to render input before focusing
-      setTimeout(() => this.searchInput?.nativeElement.focus(), 0);
-      this.startInactivityTimer();
-    } else {
-      this.clearInactivityTimer();
+  constructor(
+    private el: ElementRef,
+    private historySvc: HistoryService,
+  public auth: AuthService,
+    private toast: ToastService,
+  private router: Router,
+  ) {
+    // Load existing stored entries
+    this.history = historySvc.getAll().map(this.mapStored);
+    if (!this.history.length) {
+      // seed only if empty
+      [
+        { action: 'add' as const, message: 'Added new resident record', when: new Date(Date.now() - 1000 * 60 * 5) },
+        { action: 'update' as const, message: 'Updated facility schedule', when: new Date(Date.now() - 1000 * 60 * 15) },
+        { action: 'delete' as const, message: 'Deleted announcement draft', when: new Date(Date.now() - 1000 * 60 * 60) },
+        { action: 'add' as const, message: 'Created event “Health Fair”', when: new Date(Date.now() - 1000 * 60 * 90) },
+        { action: 'update' as const, message: 'Modified org chart positions', when: new Date(Date.now() - 1000 * 60 * 120) },
+      ].forEach(e => this.pushAndPersist(e));
     }
   }
 
-  submitSearch(): void {
-    // Placeholder: wire to real search logic later
-    console.log('Searching for:', this.query);
+  private mapStored = (s: StoredEntry): HistoryEntry => ({ action: s.action, message: s.message, when: new Date(s.when) });
+  private pushAndPersist(e: HistoryEntry) {
+    this.history.unshift(e);
+    this.historySvc.add({ action: e.action, message: e.message, when: e.when });
   }
 
-  clearSearch(): void {
-    this.query = '';
-    // Refocus input and restart inactivity timer so it can auto-close again if left empty
-    setTimeout(() => this.searchInput?.nativeElement.focus(), 0);
-    this.startInactivityTimer();
+  // Example public method to add new entry (can be called from elsewhere in future)
+  addHistory(action: HistoryEntry['action'], message: string) {
+    this.pushAndPersist({ action, message, when: new Date() });
   }
 
-  onInput(): void {
-    // If user starts typing, keep it open and reset inactivity timer
-    this.startInactivityTimer();
+  toggleHistory() { this.historyOpen = !this.historyOpen; }
+  closeHistory() { this.historyOpen = false; }
+
+  openLogin() { this.loginOpen = true; }
+  closeLogin() { this.loginOpen = false; }
+  onLoggedIn(user: string) { this.loginOpen = false; }
+
+  logout() {
+    const name = this.auth.user()?.username;
+    this.auth.logout();
+    this.toast.info('Logged out' + (name ? ' (' + name + ')' : ''));
+    // Redirect to dashboard/root after logout
+    this.router.navigate(['/']);
   }
 
-  handleBlur(): void {
-    // Collapse only if empty; if user typed something we keep it (could change requirement later)
-    if (this.query.trim() === '') {
-      this.showSearch = false;
-      this.clearInactivityTimer();
+
+
+  @HostListener('document:keydown.escape') onEscape() {
+    if (this.historyOpen) this.closeHistory();
+    if (this.loginOpen) this.closeLogin();
+  }
+
+  @HostListener('document:mousedown', ['$event']) onDocClick(ev: MouseEvent) {
+    const host = ev.target as HTMLElement;
+    const root = this.el.nativeElement as HTMLElement;
+    if (this.historyOpen) {
+      if (!root.contains(host)) return;
+      const panel = root.querySelector('.history-panel');
+      if (panel && !panel.contains(host) && !host.closest('.icon-history')) this.closeHistory();
     }
   }
 
-  handleEscape(): void {
-    this.showSearch = false;
-    this.clearInactivityTimer();
-  }
-
-  private startInactivityTimer(): void {
-    this.clearInactivityTimer();
-    // Only run inactivity collapse when empty
-    this.inactivityTimer = setTimeout(() => {
-      if (this.query.trim() === '') {
-        this.showSearch = false;
-      }
-    }, this.INACTIVITY_MS);
-  }
-
-  private clearInactivityTimer(): void {
-    if (this.inactivityTimer) {
-      clearTimeout(this.inactivityTimer);
-      this.inactivityTimer = null;
-    }
-  }
-
+  
 }

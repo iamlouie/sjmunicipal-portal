@@ -1,0 +1,142 @@
+<div class="section-head">
+	<h2 class="welcome-head animate-in" id="facilities-heading">Municipal <em>Facilities</em></h2>
+</div>
+<div class="intro-bar facilities__intro animate-in-delayed" id="facilities-intro">
+	<p class="intro-bar__text">Track public buildings, venues, maintenance schedules, and utilization insights.</p>
+</div>
+<section class="facilities" aria-labelledby="facilities-heading" aria-describedby="facilities-intro">
+	<div class="facilities__list" role="list">
+		<!-- Add Facility Card (admin only) -->
+		<article class="facility-card facility-card--add" role="listitem" *ngIf="isAdmin">
+			<button type="button" class="add-card-btn" (click)="openCreateModal()" aria-label="Add new facility">
+				<span class="add-card-btn__icon" aria-hidden="true">➕</span>
+				<span class="add-card-btn__text">Add Facility</span>
+			</button>
+		</article>
+		<article class="facility-card" role="listitem" *ngFor="let f of facilities; trackBy: trackByFacility">
+			<h3 class="facility-card__name">{{ f.name }}</h3>
+			<p class="facility-card__meta">{{ f.type }} • {{ f.location }}</p>
+			<p class="facility-card__status" [class.facility-card__status--maint]="f.status==='Under Maintenance'" [class.facility-card__status--planned]="f.status==='Planned'" [class.facility-card__status--oper]="f.status==='Operational'">
+				<span class="status-badge">{{ f.status }}</span>
+				<span *ngIf="f.capacity" class="capacity">Capacity: {{ f.capacity }}</span>
+			</p>
+			<p class="facility-card__hours" *ngIf="f.hours">🕒 <span class="label">Hours:</span> <span class="value">{{ f.hours }}</span></p>
+			<p class="facility-card__notes" *ngIf="f.notes">{{ f.notes }}</p>
+			<button type="button" class="facility-card__action" (click)="openViewModal(f)" [attr.aria-label]="'View details for ' + f.name">View Details</button>
+		</article>
+	</div>
+</section>
+
+<!-- View Facility Modal -->
+<div class="modal-backdrop" *ngIf="showView" (click)="closeViewModal()" aria-hidden="true"></div>
+<div class="modal" *ngIf="showView && selected as sel" role="dialog" aria-modal="true" [attr.aria-labelledby]="'facility-modal-title-' + sel.id">
+	<div class="modal__inner">
+		<p class="modal__section-title" aria-label="Facility details section"><span class="modal__icon" aria-hidden="true">🏛️</span> Facility Details</p>
+		<!-- View Mode -->
+		<div *ngIf="!editing; else editBlock" class="facility-view">
+			<h3 class="modal__title" [id]="'facility-modal-title-' + sel.id">{{ sel.name }}</h3>
+			<p class="modal__meta">{{ sel.type }} • {{ sel.location }} <span *ngIf="sel.capacity">• Capacity: {{ sel.capacity }}</span></p>
+			<p class="modal__body">
+				<strong>Status:</strong> {{ sel.status }}<br *ngIf="sel.hours" />
+				<span *ngIf="sel.hours"><strong>Operating Hours:</strong> {{ sel.hours }}</span><br *ngIf="sel.notes" />
+				<span *ngIf="sel.notes"><strong>Description:</strong> {{ sel.notes }}</span>
+			</p>
+			<div class="modal__footer" role="group" aria-label="Facility actions">
+				<button *ngIf="isAdmin" type="button" class="modal__btn modal__btn--primary" (click)="startEdit()" aria-label="Edit facility">Edit</button>
+				<button type="button" class="modal__btn modal__btn--secondary" (click)="closeViewModal()" aria-label="Close dialog">Close</button>
+			</div>
+		</div>
+		<!-- Edit Mode Template -->
+		<ng-template #editBlock>
+			<form class="create-form" (ngSubmit)="saveEdit()" novalidate aria-label="Edit facility form">
+				<div class="form__row">
+					<label for="edit-fac-name">Name <span aria-hidden="true" class="req">*</span></label>
+					<input id="edit-fac-name" name="name" type="text" required [(ngModel)]="editModel.name" [class.changed]="selected && editModel.name !== selected.name" />
+					<p class="form__err" *ngIf="editSubmitted && !editModel.name">Name is required.</p>
+				</div>
+				<div class="form__row form__row--inline">
+					<div>
+						<label for="edit-fac-type">Type <span aria-hidden="true" class="req">*</span></label>
+						<input id="edit-fac-type" name="type" type="text" required [(ngModel)]="editModel.type" [class.changed]="selected && editModel.type !== selected.type" />
+					</div>
+					<div>
+						<label for="edit-fac-location">Location <span aria-hidden="true" class="req">*</span></label>
+						<input id="edit-fac-location" name="location" type="text" required [(ngModel)]="editModel.location" [class.changed]="selected && editModel.location !== selected.location" />
+					</div>
+				</div>
+				<div class="form__row form__row--inline">
+					<div>
+						<label for="edit-fac-status">Status <span aria-hidden="true" class="req">*</span></label>
+						<input id="edit-fac-status" name="status" type="text" required [(ngModel)]="editModel.status" [class.changed]="selected && editModel.status !== selected.status" />
+						<p class="form__err" *ngIf="editSubmitted && !editModel.status">Status is required.</p>
+					</div>
+					<div>
+						<label for="edit-fac-capacity">Capacity</label>
+						<input id="edit-fac-capacity" name="capacity" type="number" min="0" [(ngModel)]="editModel.capacity" [class.changed]="selected && editModel.capacity !== selected.capacity" />
+					</div>
+				</div>
+				<div class="form__row">
+					<label for="edit-fac-hours">Operating Hours</label>
+					<input id="edit-fac-hours" name="hours" type="text" [(ngModel)]="editModel.hours" [class.changed]="selected && editModel.hours !== selected.hours" />
+				</div>
+				<div class="form__row">
+					<label for="edit-fac-notes">Description</label>
+					<textarea id="edit-fac-notes" name="notes" rows="3" [(ngModel)]="editModel.notes" [class.changed]="selected && editModel.notes !== selected.notes"></textarea>
+				</div>
+				<p class="form__legend" *ngIf="isEditDirty">Highlighted fields have unsaved changes.</p>
+				<div class="form__actions">
+					<button type="button" class="btn btn--secondary" (click)="cancelEdit()">Cancel</button>
+					<button type="submit" class="btn btn--primary" [disabled]="!isEditDirty">Save Changes</button>
+				</div>
+			</form>
+		</ng-template>
+	</div>
+</div>
+
+<!-- Create Facility Modal -->
+<div class="modal-backdrop" *ngIf="showCreate" (click)="cancelCreate()" aria-hidden="true"></div>
+<div class="modal" *ngIf="showCreate" role="dialog" aria-modal="true" aria-labelledby="create-facility-title">
+	<div class="modal__inner">
+		<p class="modal__section-title" id="create-facility-title"><span class="modal__icon" aria-hidden="true">➕</span> New Facility</p>
+		<form class="create-form" (ngSubmit)="submitCreateForm()" novalidate>
+			<div class="form__row">
+				<label for="new-fac-name">Name <span aria-hidden="true" class="req">*</span></label>
+				<input id="new-fac-name" name="name" type="text" required [(ngModel)]="createModel.name" />
+				<p class="form__err" *ngIf="createSubmitted && !createModel.name">Name is required.</p>
+			</div>
+			<div class="form__row form__row--inline">
+				<div>
+					<label for="new-fac-type">Type <span aria-hidden="true" class="req">*</span></label>
+					<input id="new-fac-type" name="type" type="text" required [(ngModel)]="createModel.type" />
+				</div>
+				<div>
+					<label for="new-fac-location">Location <span aria-hidden="true" class="req">*</span></label>
+					<input id="new-fac-location" name="location" type="text" required [(ngModel)]="createModel.location" />
+				</div>
+			</div>
+			<div class="form__row form__row--inline">
+				<div>
+					<label for="new-fac-status">Status <span aria-hidden="true" class="req">*</span></label>
+					<input id="new-fac-status" name="status" type="text" required [(ngModel)]="createModel.status" placeholder="Operational" />
+					<p class="form__err" *ngIf="createSubmitted && !createModel.status">Status is required.</p>
+				</div>
+				<div>
+					<label for="new-fac-capacity">Capacity</label>
+					<input id="new-fac-capacity" name="capacity" type="number" min="0" [(ngModel)]="createModel.capacity" />
+				</div>
+			</div>
+			<div class="form__row">
+				<label for="new-fac-hours">Operating Hours</label>
+				<input id="new-fac-hours" name="hours" type="text" placeholder="Mon-Fri 8:00 AM – 5:00 PM" [(ngModel)]="createModel.hours" />
+			</div>
+			<div class="form__row">
+				<label for="new-fac-notes">Description</label>
+				<textarea id="new-fac-notes" name="notes" rows="3" [(ngModel)]="createModel.notes"></textarea>
+			</div>
+			<div class="form__actions">
+				<button type="button" class="btn btn--secondary" (click)="cancelCreate()" [disabled]="creating">Cancel</button>
+				<button type="submit" class="btn btn--primary" [disabled]="creating || !createModel.name || !createModel.type || !createModel.location || !createModel.status">{{ creating ? 'Saving…' : 'Create Facility' }}</button>
+			</div>
+		</form>
+	</div>
+</div>

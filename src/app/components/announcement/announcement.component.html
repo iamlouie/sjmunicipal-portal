@@ -1,0 +1,90 @@
+<div class="section-head">
+	<h2 class="welcome-head animate-in" id="announcement-heading">Municipal <em>Announcements</em></h2>
+</div>
+<div class="intro-bar announcement__intro animate-in-delayed" id="announcement-intro">
+	<p class="intro-bar__text">Stay updated with the latest public notices, advisories, and municipal directives.</p>
+</div>
+
+<section class="announcement" aria-labelledby="announcement-heading" aria-describedby="announcement-intro">
+	<div class="announcement__list" role="list">
+		<!-- Add Announcement Card (admin only) -->
+		<article class="announcement-card announcement-card--add" role="listitem" *ngIf="isAdmin">
+			<button type="button" class="add-card-btn" (click)="openCreateModal()" [disabled]="loading || creating" aria-label="Add new announcement">
+				<span class="add-card-btn__icon" aria-hidden="true">➕</span>
+				<span class="add-card-btn__text">{{ creating ? 'Creating…' : 'Add Announcement' }}</span>
+			</button>
+		</article>
+		<article class="announcement-card" role="listitem" *ngFor="let a of sortedAnnouncements; trackBy: trackByAnnouncement" [class.announcement-card--past]="isPast(a)" [class.announcement-card--today]="isToday(a)" [class.announcement-card--near]="isNearUpcoming(a)" [attr.data-days]="isNearUpcoming(a) ? daysUntil(a) : null">
+			<h3 class="announcement-card__title">{{ a.title }}</h3>
+			<p class="announcement-card__meta">Posted <time [attr.datetime]="a.date">{{ a.dateDisplay }}</time></p>
+			<p class="announcement-card__excerpt">{{ a.excerpt }}</p>
+			<button class="announcement-card__action" type="button" (click)="openModal(a)" [attr.aria-label]="'Read more about ' + a.title">Read More</button>
+		</article>
+	</div>
+</section>
+
+<div class="modal-backdrop" *ngIf="showModal" (click)="closeModal()" aria-hidden="true"></div>
+
+<div class="modal" *ngIf="showModal && selected as sel" role="dialog" aria-modal="true" [attr.aria-labelledby]="'announcement-modal-title-' + sel.id">
+	<div class="modal__inner">
+		<p class="modal__section-title" aria-label="Announcement details section"><span class="modal__icon" aria-hidden="true">📢</span> Announcement Details</p>
+		<form *ngIf="editing; else annView" class="create-form" (ngSubmit)="submitEditForm()" novalidate>
+			<div class="form__row">
+				<label for="edit-ann-title">Title <span aria-hidden="true" class="req">*</span></label>
+				<input id="edit-ann-title" name="title" type="text" required [(ngModel)]="editModel.title" [class.changed]="selected && editModel.title !== selected.title" />
+				<p class="form__err" *ngIf="editSubmitted && !editModel.title">Title is required.</p>
+			</div>
+			<div class="form__row">
+				<label for="edit-ann-date">Date <span aria-hidden="true" class="req">*</span></label>
+				<input id="edit-ann-date" name="date" type="date" required [(ngModel)]="editModel.date" [class.changed]="selected && editModel.date !== selected.date" />
+			</div>
+			<div class="form__row">
+				<label for="edit-ann-body">Body / Excerpt <span aria-hidden="true" class="req">*</span></label>
+				<textarea id="edit-ann-body" name="excerpt" rows="4" required [(ngModel)]="editModel.excerpt" [class.changed]="selected && editModel.excerpt !== selected.excerpt"></textarea>
+				<p class="form__err" *ngIf="editSubmitted && !editModel.excerpt">Body is required.</p>
+			</div>
+			<p class="form__legend" *ngIf="isEditDirty">Highlighted fields have unsaved changes.</p>
+			<div class="form__actions">
+				<button type="button" class="btn btn--secondary" (click)="cancelEdit()" [disabled]="updateSaving">Cancel</button>
+				<button type="submit" class="btn btn--primary" [disabled]="updateSaving || !isEditDirty">{{ updateSaving ? 'Saving…' : 'Save Changes' }}</button>
+			</div>
+		</form>
+		<ng-template #annView>
+			<h3 class="modal__title" [id]="'announcement-modal-title-' + sel.id">{{ sel.title }}</h3>
+			<p class="modal__meta">Posted <time [attr.datetime]="sel.date">{{ sel.dateDisplay }}</time></p>
+			<p class="modal__body">{{ sel.excerpt }}</p>
+			<div class="modal__footer" role="group" aria-label="Announcement actions">
+				<button *ngIf="isAdmin" type="button" class="modal__btn modal__btn--primary" (click)="startEdit()" aria-label="Edit announcement">Edit</button>
+				<button type="button" class="modal__btn modal__btn--secondary" (click)="closeModal()" aria-label="Close dialog">Close</button>
+			</div>
+		</ng-template>
+	</div>
+</div>
+
+<!-- Create Announcement Modal -->
+<div class="modal-backdrop" *ngIf="showCreate" (click)="cancelCreate()" aria-hidden="true"></div>
+<div class="modal" *ngIf="showCreate" role="dialog" aria-modal="true" aria-labelledby="create-announcement-title">
+	<div class="modal__inner">
+		<p class="modal__section-title" id="create-announcement-title"><span class="modal__icon" aria-hidden="true">➕</span> New Announcement</p>
+		<form class="create-form" (ngSubmit)="submitCreateForm()" novalidate>
+			<div class="form__row">
+				<label for="new-ann-title">Title <span aria-hidden="true" class="req">*</span></label>
+				<input id="new-ann-title" name="title" type="text" required [(ngModel)]="createModel.title" />
+				<p class="form__err" *ngIf="createSubmitted && !createModel.title">Title is required.</p>
+			</div>
+			<div class="form__row">
+				<label for="new-ann-date">Date <span aria-hidden="true" class="req">*</span></label>
+				<input id="new-ann-date" name="date" type="date" required [(ngModel)]="createModel.date" />
+			</div>
+			<div class="form__row">
+				<label for="new-ann-body">Body / Excerpt <span aria-hidden="true" class="req">*</span></label>
+				<textarea id="new-ann-body" name="excerpt" rows="4" required [(ngModel)]="createModel.excerpt"></textarea>
+				<p class="form__err" *ngIf="createSubmitted && !createModel.excerpt">Body is required.</p>
+			</div>
+			<div class="form__actions">
+				<button type="button" class="btn btn--secondary" (click)="cancelCreate()" [disabled]="creating">Cancel</button>
+				<button type="submit" class="btn btn--primary" [disabled]="creating || !createModel.title || !createModel.date || !createModel.excerpt">{{ creating ? 'Saving…' : 'Create Announcement' }}</button>
+			</div>
+		</form>
+	</div>
+</div>

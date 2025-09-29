@@ -44,7 +44,7 @@ export class EventComponent {
   createSubmitted = false;
 
   constructor(private auth: AuthService) {
-    this.http.get<MunicipalEvent[]>('http://localhost:4300/events')
+    this.http.get<MunicipalEvent[]>('https://my-json-db-3.onrender.com/events')
       .subscribe({
         next: data => { this.events = data; this.loading = false; },
         error: err => { this.error = 'Failed to load events'; console.error(err); this.loading = false; }
@@ -116,7 +116,7 @@ export class EventComponent {
 
   private postEvent(payload: Omit<MunicipalEvent,'id'>) {
     this.creating = true;
-    this.http.post<MunicipalEvent>('http://localhost:4300/events', payload)
+    this.http.post<MunicipalEvent>('https://my-json-db-3.onrender.com/events', payload)
       .subscribe({
         next: saved => {
           this.events = [saved, ...this.events];
@@ -166,7 +166,7 @@ export class EventComponent {
       ...this.editModel as MunicipalEvent,
       id
     };
-    this.http.put<MunicipalEvent>(`http://localhost:4300/events/${id}`, payload)
+    this.http.put<MunicipalEvent>(`https://my-json-db-3.onrender.com/events/${id}`, payload)
       .subscribe({
         next: updated => {
             this.events = this.events.map(e => e.id === id ? updated : e);

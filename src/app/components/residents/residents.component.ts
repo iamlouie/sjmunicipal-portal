@@ -150,7 +150,7 @@ export class ResidentsComponent {
         this.filterAgeMax = obj.filterAgeMax ?? this.filterAgeMax;
       } catch {}
     }
-    this.http.get<Resident[]>('http://localhost:4300/residents')
+    this.http.get<Resident[]>('https://my-json-db-3.onrender.com/residents')
       .subscribe({
         next: data => { 
           this.residents = data; 
@@ -276,7 +276,7 @@ export class ResidentsComponent {
     };
     this.saving = true;
     // POST to backend (optimistic update)
-    this.http.post<Resident>('http://localhost:4300/residents', newResident)
+    this.http.post<Resident>('https://my-json-db-3.onrender.com/residents', newResident)
       .subscribe({
         next: res => {
           this.residents.push(res);
@@ -334,7 +334,7 @@ export class ResidentsComponent {
       age: this.editModel.age ?? this.selected.age
     };
     this.updating = true;
-    this.http.put<Resident>(`http://localhost:4300/residents/${id}`, updated)
+    this.http.put<Resident>(`https://my-json-db-3.onrender.com/residents/${id}`, updated)
       .subscribe({
         next: res => {
           // replace in list

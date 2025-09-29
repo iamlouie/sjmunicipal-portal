@@ -46,7 +46,7 @@ export class FacilitiesComponent {
   editModel: Partial<Facility> = {};
   
   constructor(private auth: AuthService) {
-    this.http.get<Facility[]>('http://localhost:4300/facilities')
+    this.http.get<Facility[]>('https://my-json-db-3.onrender.com/facilities')
       .subscribe({
         next: data => { this.facilities = data; this.loading = false; },
         error: err => { console.error('Failed to load facilities', err); this.error = 'Failed to load facilities'; this.loading = false; }
@@ -96,7 +96,7 @@ export class FacilitiesComponent {
       id
     };
     this.savingEdit = true;
-    this.http.put<Facility>(`http://localhost:4300/facilities/${id}`, payload)
+    this.http.put<Facility>(`https://my-json-db-3.onrender.com/facilities/${id}`, payload)
       .subscribe({
         next: updated => {
           this.facilities = this.facilities.map(f => f.id === id ? updated : f);
@@ -143,7 +143,7 @@ export class FacilitiesComponent {
       notes: this.createModel.notes
     };
     this.creating = true;
-    this.http.post<Facility>('http://localhost:4300/facilities', payload)
+    this.http.post<Facility>('https://my-json-db-3.onrender.com/facilities', payload)
       .subscribe({
         next: saved => {
           this.facilities = [saved, ...this.facilities];

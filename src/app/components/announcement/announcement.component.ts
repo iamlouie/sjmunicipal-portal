@@ -40,7 +40,7 @@ export class AnnouncementComponent {
   editSubmitted = false;
 
   constructor(private auth: AuthService) {
-    this.http.get<MunicipalAnnouncement[]>('http://localhost:4300/announcements')
+    this.http.get<MunicipalAnnouncement[]>('https://my-json-db-3.onrender.com/announcements')
       .subscribe({
         next: data => { this.announcements = data; this.loading = false; },
         error: err => { this.error = 'Failed to load announcements'; console.error(err); this.loading = false; }
@@ -112,7 +112,7 @@ export class AnnouncementComponent {
       author: this.createModel.author
     };
     this.creating = true;
-    this.http.post<MunicipalAnnouncement>('http://localhost:4300/announcements', payload)
+    this.http.post<MunicipalAnnouncement>('https://my-json-db-3.onrender.com/announcements', payload)
       .subscribe({
         next: saved => {
           this.announcements = [saved, ...this.announcements];
@@ -163,7 +163,7 @@ export class AnnouncementComponent {
       id,
       dateDisplay: this.formatDate(this.editModel.date)
     };
-    this.http.put<MunicipalAnnouncement>(`http://localhost:4300/announcements/${id}`, payload)
+    this.http.put<MunicipalAnnouncement>(`https://my-json-db-3.onrender.com/announcements/${id}`, payload)
       .subscribe({
         next: updated => {
           this.announcements = this.announcements.map(a => a.id === id ? updated : a);

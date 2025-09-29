@@ -47,6 +47,22 @@
 /* Optional small connector from label to councilors line */
 .orgchart__group-label::after { content: ""; position: absolute; left: 50%; bottom: -14px; transform: translateX(-50%); width: 2px; height: 14px; background: #b5c3cc; }
 
+@media (max-width: 640px) {
+	.orgchart__group-label {
+		font-size: 13px;
+		padding: 6px 8px 7px;
+		max-width: 220px;
+	}
+}
+
+@media (max-width: 420px) {
+	.orgchart__group-label {
+		font-size: 11px;
+		padding: 4px 6px 5px;
+		max-width: 140px;
+	}
+}
+
 /* Horizontal connector line above councilors */
 .orgchart__level--councilors { margin-top: 16px; }
 .orgchart__level--councilors::before { content: ""; position: absolute; top: -14px; left: 10%; right: 10%; height: 2px; background: #b5c3cc; }
@@ -68,8 +84,27 @@
 	/* Removed previous mobile override that shrank avatar (56%) causing visual jump */
 	.person-card__avatar { font-size: 11px; }
 	.person-card__body { margin-top: 2px; padding: 2px 4px 4px; }
-	.councilors-grid { grid-template-columns: repeat(2, 1fr); gap: 10px 8px; }
+	.councilors-grid {
+		display: grid !important;
+		grid-template-columns: repeat(2, 1fr) !important;
+		gap: 10px 8px !important;
+		justify-items: center !important;
+		align-items: center !important;
+		width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+		justify-content: center;
+	}
+	.councilors-grid > .person-card {
+		margin: 0 !important;
+		width: 70vw !important;
+		max-width: 90px !important;
+	}
+	.orgchart__level--councilors {
+		display: block !important;
+	}
 	.orgchart__level--councilors::before { left: 14%; right: 14%; }
+	.orgchart__level { justify-content: center !important; align-items: center !important; }
 }
 
 /* Accessibility focus */

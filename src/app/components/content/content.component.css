@@ -166,6 +166,13 @@
 .c-slide { width: 100%; height: 100%; display: none; margin: 0; }
 .c-slide.active { display: block; height: 100%; margin: 0; }
 .c-slide img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; border-radius: inherit; }
+.c-slide .c-video { width:100%; height:100%; object-fit:cover; border-radius:inherit; display:block; background:#000; }
+.c-video-wrap { position:relative; width:100%; height:100%; }
+/* Inline play overlay */
+.video-inline-play { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,rgba(0,0,0,.45),rgba(0,0,0,.55)); color:#fff; font-size:2.4rem; font-weight:600; line-height:1; border:0; cursor:pointer; border-radius:inherit; transition:background .35s, transform .35s; }
+.video-inline-play:hover { background:linear-gradient(135deg,rgba(0,0,0,.55),rgba(0,0,0,.65)); }
+.video-inline-play:active { transform:scale(.9); }
+.video-inline-play:focus-visible { outline:3px solid #fff; outline-offset:2px; }
 /* Optional overlay removed to keep edge alignment true */
 .c-slide::after { display: none; }
 

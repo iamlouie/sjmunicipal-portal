@@ -1,5 +1,10 @@
 <div class="header__inner">
   <div class="brand" aria-label="Application title">
+    <button type="button" class="hamburger" aria-label="Open menu" [attr.aria-expanded]="menuOpen" aria-controls="header-menu" (click)="toggleMenu()">
+      <span class="hamburger__box" aria-hidden="true">
+        <span class="hamburger__inner" [class.is-open]="menuOpen"></span>
+      </span>
+    </button>
     <span class="brand__text">Cabalian LGU Portal</span>
   </div>
   <nav class="main-nav" aria-label="Main navigation">
@@ -8,17 +13,6 @@
     </ul>
   </nav>
   <div class="flex-spacer" aria-hidden="true"></div>
-  <button type="button" class="btn btn--icon btn--ghost" aria-label="History" title="History" (click)="toggleHistory()">
-    <svg class="icon icon-history" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
-      <path fill="currentColor" d="M13 3a9 9 0 1 0 8.485 6.002 1 1 0 1 0-1.932.518A7 7 0 1 1 12.999 5a6.96 6.96 0 0 1 4.95 2.05L15 10h6V4l-2.184 2.184A8.963 8.963 0 0 0 13 3Zm-1 5v5a1 1 0 0 0 .553.894l4 2a1 1 0 0 0 .894-1.788L14 12.382V8a1 1 0 1 0-2 0Z"/>
-    </svg>
-  </button>
-  <button type="button" class="btn btn--icon btn--ghost" aria-label="Notifications" title="Notifications">
-    <svg class="icon icon-bell" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
-      <path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11c0-3.07-1.64-5.64-4.5-6.32V4a2.5 2.5 0 0 0-5 0v.68C6.64 5.36 5 7.92 5 11v5l-1.7 1.7a.75.75 0 0 0 .53 1.28h16.34a.75.75 0 0 0 .53-1.28L19 16Z"/>
-    </svg>
-    <!-- Optional badge: <span class="badge" aria-hidden="true">3</span> -->
-  </button>
   <ng-container *ngIf="!auth.isAuthenticated(); else loggedIn">
     <button type="button" class="btn btn--primary login-btn" (click)="openLogin()">Login</button>
   </ng-container>
@@ -31,21 +25,32 @@
   
 </div>
 
-<div class="history-panel" *ngIf="historyOpen" role="region" aria-label="Recent activity">
-  <div class="history-panel__header">
-    <span>History</span>
-    <button class="btn btn--ghost btn--sm" (click)="closeHistory()" aria-label="Close history">✕</button>
+<!-- Hamburger menu drawer -->
+<div class="menu-overlay" *ngIf="menuOpen" (click)="closeMenu()" aria-hidden="true"></div>
+<div id="header-menu" class="menu-drawer" *ngIf="menuOpen" role="menu" aria-label="Header menu">
+  <div class="menu-drawer__header">
+    <span class="menu-drawer__title">Menu</span>
+    <button type="button" class="menu-close" aria-label="Close menu" (click)="closeMenu()">✕</button>
   </div>
-  <ul class="history-list">
-    <li *ngFor="let item of history | slice:0:12" class="history-item">
-      <span class="history-item__icon" [class.add]="item.action==='add'" [class.update]="item.action==='update'" [class.delete]="item.action==='delete'"></span>
-      <div class="history-item__body">
-        <div class="history-item__text">{{ item.message }}</div>
-        <div class="history-item__meta">{{ item.when | date:'short' }}</div>
-      </div>
-    </li>
-    <li *ngIf="!history.length" class="history-item history-item--empty">No activity yet.</li>
-  </ul>
+  <div class="menu-drawer__section">
+    <button type="button" class="menu-item" (click)="toggleHistory()" [attr.aria-expanded]="historyOpen" aria-controls="history-sub">History</button>
+    <div id="history-sub" class="history-sub" *ngIf="historyOpen" role="region" aria-label="Recent activity">
+      <ul class="history-list in-menu">
+        <li *ngFor="let item of history | slice:0:12" class="history-item">
+          <span class="history-item__icon" [class.add]="item.action==='add'" [class.update]="item.action==='update'" [class.delete]="item.action==='delete'"></span>
+          <div class="history-item__body">
+            <div class="history-item__text">{{ item.message }}</div>
+            <div class="history-item__meta">{{ item.when | date:'short' }}</div>
+          </div>
+        </li>
+        <li *ngIf="!history.length" class="history-item history-item--empty">No activity yet.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="menu-drawer__section">
+    <button type="button" class="menu-item" aria-label="Notifications (placeholder)">Notifications <span class="badge" aria-hidden="true" *ngIf="false">0</span></button>
+    <p class="menu-note">Notification center coming soon.</p>
+  </div>
 </div>
 
 <app-login [open]="loginOpen" (closed)="closeLogin()" (loggedIn)="onLoggedIn($event)"></app-login>

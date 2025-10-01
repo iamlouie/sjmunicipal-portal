@@ -19,6 +19,7 @@ export class HeaderComponent {
   historyOpen = false;
   history: HistoryEntry[] = [];
   loginOpen = false;
+  menuOpen = false;
 
   constructor(
     private el: ElementRef,
@@ -54,6 +55,8 @@ export class HeaderComponent {
 
   toggleHistory() { this.historyOpen = !this.historyOpen; }
   closeHistory() { this.historyOpen = false; }
+  toggleMenu() { this.menuOpen = !this.menuOpen; if (!this.menuOpen) { this.historyOpen = false; } }
+  closeMenu() { this.menuOpen = false; this.historyOpen = false; }
 
   openLogin() { this.loginOpen = true; }
   closeLogin() { this.loginOpen = false; }
@@ -71,6 +74,7 @@ export class HeaderComponent {
 
   @HostListener('document:keydown.escape') onEscape() {
     if (this.historyOpen) this.closeHistory();
+    if (this.menuOpen) this.closeMenu();
     if (this.loginOpen) this.closeLogin();
   }
 
@@ -81,6 +85,12 @@ export class HeaderComponent {
       if (!root.contains(host)) return;
       const panel = root.querySelector('.history-panel');
       if (panel && !panel.contains(host) && !host.closest('.icon-history')) this.closeHistory();
+    }
+    if (this.menuOpen) {
+      const drawer = root.querySelector('#header-menu');
+      if (drawer && !drawer.contains(host) && !host.closest('.hamburger')) {
+        this.closeMenu();
+      }
     }
   }
 

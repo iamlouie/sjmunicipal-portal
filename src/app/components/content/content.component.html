@@ -5,7 +5,24 @@
   <div class="c-carousel" role="region" aria-label="Municipal showcase" (mouseenter)="pause()" (mouseleave)="resume()">
       <div class="c-slides">
         <figure *ngFor="let s of slides; let i = index" class="c-slide" [class.active]="i===current" [attr.aria-hidden]="i===current ? 'false':'true'">
-          <img [src]="s.src" [alt]="s.alt" />
+          <ng-container [ngSwitch]="s.type">
+            <img *ngSwitchCase="'image'" [src]="s.src" [alt]="s.alt" />
+            <div *ngSwitchCase="'video'" class="c-video-wrap">
+              <video #vid [attr.title]="s.alt" playsinline controls class="c-video" preload="metadata" (play)="onVideoPlay()" (pause)="onVideoPause()" (ended)="onVideoEnded()">
+                <source [src]="s.src" type="video/mp4" />
+                {{ s.alt }}
+              </video>
+              <button
+                type="button"
+                class="video-inline-play"
+                *ngIf="i===current && showPlayOverlay"
+                (click)="playCurrentVideo()"
+                aria-label="Play video"
+              >
+                <span aria-hidden="true">▶</span>
+              </button>
+            </div>
+          </ng-container>
           <figcaption class="c-caption d-none d-sm-inline-block">
             <h5 class="c-cap-title">{{ s.title || s.alt }}</h5>
             <p class="c-cap-tag" *ngIf="s.tagline">{{ s.tagline }}</p>

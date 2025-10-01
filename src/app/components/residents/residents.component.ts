@@ -3,6 +3,7 @@ import { NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { HistoryService } from '../header/history.service';
+import { ToastService } from '../../toast.service';
 import { AuthService } from '../../auth.service';
 
 interface Resident {
@@ -131,10 +132,12 @@ export class ResidentsComponent {
     birthday: '',
     contactNumber: ''
   };
+  // Snapshot of pristine create state to compare for dirtiness
+  private createPristine: Partial<Resident> | null = null;
   changedFields: ResidentChangedFields = {};
   barangayOptions = BARANGAY_OPTIONS.slice();
 
-  constructor(private history: HistoryService, private auth: AuthService) {
+  constructor(private history: HistoryService, private auth: AuthService, private toast: ToastService) {
     // restore filters from storage
     const saved = localStorage.getItem('residentFilters');
     if (saved) {
@@ -252,6 +255,8 @@ export class ResidentsComponent {
   this.createModel = { firstName: '', middleName: '', lastName: '', age: undefined as any, gender: '', occupation: '', barangay: '', civilStatus: '', status: 'Active', street: '', birthday: '', contactNumber: '' };
     this.changedFields = {};
     this.saving = false;
+    // Store pristine snapshot
+    this.createPristine = { ...this.createModel };
   }
   saveResident() {
     if (this.saving) return;
@@ -281,6 +286,7 @@ export class ResidentsComponent {
         next: res => {
           this.residents.push(res);
           this.history.logChange({ entity: 'Resident', action: 'add', summary: `Created resident #${res.id}`, extra: { name: res.firstName + ' ' + res.lastName } });
+          this.toast.success(`Resident ${res.firstName} ${res.lastName} added successfully.`);
           // refresh unique lists
           this.uniqueBarangays = [...new Set(this.residents.map(r => r.barangay))].sort((a,b)=> a.localeCompare(b));
           this.uniqueCivilStatuses = [...new Set(this.residents.map(r => r.civilStatus))].sort((a,b)=> a.localeCompare(b));
@@ -341,6 +347,7 @@ export class ResidentsComponent {
           this.residents = this.residents.map(r => r.id === id ? res : r);
           this.selected = res;
           this.applyFilters();
+          this.toast.success(`Resident ${res.firstName} ${res.lastName} updated successfully.`);
           this.editing = false;
           this.updating = false;
           this.editModel = {};
@@ -363,6 +370,29 @@ export class ResidentsComponent {
       const cleaned = this.createModel.contactNumber.replace(/[^0-9]/g, '');
       // Optional: enforce starting with '09' pattern (Philippines mobile style) - leave as is if not needed.
       this.createModel.contactNumber = cleaned.slice(0, 11);
+    }
+  }
+  // Generic digit-only enforcement for key presses in contact input
+  onContactKeyDown(e: KeyboardEvent) {
+    const allowedControl = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Home','End'];
+    if (allowedControl.includes(e.key)) return;
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+    }
+  }
+  // Prevent non-digit paste
+  onContactPaste(e: ClipboardEvent, isEdit = false) {
+    const data = e.clipboardData?.getData('text') || '';
+    if (/[^0-9]/.test(data)) {
+      e.preventDefault();
+      const digits = data.replace(/[^0-9]/g,'').slice(0,11);
+      if (isEdit) {
+        this.editModel.contactNumber = (this.editModel.contactNumber||'') + digits;
+        this.sanitizeEditContact();
+      } else {
+        this.createModel.contactNumber = (this.createModel.contactNumber||'') + digits;
+        this.sanitizeContact();
+      }
     }
   }
   onBirthdayChange(val: string) {
@@ -443,16 +473,26 @@ export class ResidentsComponent {
   // Helper used by template to decide if Save button should be enabled.
   isCreateValid(): boolean {
     const m = this.createModel;
-    return !!(
-      m.firstName && m.firstName.trim() &&
-      m.lastName && m.lastName.trim() &&
-      m.birthday && m.birthday !== '' &&
-      m.age !== undefined && m.age !== null &&
-      m.gender && m.gender !== '' &&
-      m.barangay && m.barangay !== '' &&
-      m.civilStatus && m.civilStatus !== '' &&
-      m.status
-    );
+    const first = (m.firstName||'').trim();
+    const last = (m.lastName||'').trim();
+    const bday = (m.birthday||'').trim();
+    const gender = (m.gender||'').trim();
+    const brgy = (m.barangay||'').trim();
+    const civ = (m.civilStatus||'').trim();
+    const status = (m.status||'').toString().trim();
+    // Age should be computed from birthday; ensure birthday format looks like YYYY-MM-DD
+    const birthdayValid = /^\d{4}-\d{2}-\d{2}$/.test(bday);
+    return !!(first && last && birthdayValid && m.age != null && gender && brgy && civ && status);
+  }
+  // Determine if create form has any changes from its pristine snapshot
+  get isCreateDirty(): boolean {
+    if (!this.createPristine) return false;
+    const keys: (keyof Resident)[] = ['firstName','middleName','lastName','birthday','gender','occupation','street','civilStatus','status','barangay','contactNumber'];
+    return keys.some(k => (this.createModel as any)[k] !== (this.createPristine as any)[k]);
+  }
+  // Unified disable flag for Create Save button (template binding)
+  get disableCreateSave(): boolean {
+    return !this.isCreateValid() || !this.isCreateDirty || this.saving;
   }
   // Exposed for template conditionals
   get isAdmin(): boolean { return this.auth.isAdmin(); }

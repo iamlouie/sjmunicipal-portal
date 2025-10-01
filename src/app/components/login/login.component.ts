@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../auth.service';
@@ -13,7 +13,7 @@ interface LoginModel { username: string; password: string; }
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnChanges {
   @Input() open = false;
   @Output() closed = new EventEmitter<void>();
   @Output() loggedIn = new EventEmitter<string>();
@@ -34,7 +34,9 @@ export class LoginComponent {
     }
   }
 
-  ngOnChanges() { if (this.open) { this.error=''; this.focusFirst(); } }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['open'] && this.open) { this.error=''; this.focusFirst(); }
+  }
 
   private focusFirst() {
     setTimeout(() => {

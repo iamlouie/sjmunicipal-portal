@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../toast.service';
 import { AuthService } from '../../auth.service';
+import { parseIsoDate, isIsoPast, isIsoToday, isIsoWithinNextDays, daysUntilIso, todayMidnightTs, formatIsoDisplay } from '../../date-utils';
 
 interface MunicipalEvent {
   id: number;
@@ -38,6 +39,7 @@ export class EventComponent {
   editing = false;
   updateSaving = false;
   editModel: Partial<MunicipalEvent> = {};
+  private pristineEditSnapshot: Partial<MunicipalEvent> | null = null;
   editSubmitted = false;
   // inline create form state
   createModel: any = { title:'', date:'', time:'', location:'', excerpt:'' };
@@ -51,36 +53,26 @@ export class EventComponent {
       });
   }
 
-  private parseDate(d: string) {
-    return new Date(d + (d.length === 10 ? 'T00:00:00' : ''));
-  }
-
-  private isUpcoming(ev: MunicipalEvent, todayMidnight: number) {
-    const t = this.parseDate(ev.date).getTime();
-    return !isNaN(t) && t >= todayMidnight;
-  }
-
   get sortedEvents() {
-    const today = new Date();
-    // normalize to midnight
-    const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const todayTs = todayMidnightTs();
     const upcoming: MunicipalEvent[] = [];
     const past: MunicipalEvent[] = [];
     for (const ev of this.events) {
-      if (this.isUpcoming(ev, todayMidnight)) upcoming.push(ev); else past.push(ev);
+      const t = parseIsoDate(ev.date).getTime();
+      if (!isNaN(t) && t >= todayTs) upcoming.push(ev); else past.push(ev);
     }
     // upcoming ascending (soonest first)
     upcoming.sort((a,b) => {
-      const at = this.parseDate(a.date).getTime();
-      const bt = this.parseDate(b.date).getTime();
+      const at = parseIsoDate(a.date).getTime();
+      const bt = parseIsoDate(b.date).getTime();
       if (at !== bt) return at - bt;
       if (a.time && b.time) return a.time.localeCompare(b.time);
       return 0;
     });
     // past descending (most recent past first)
     past.sort((a,b) => {
-      const at = this.parseDate(a.date).getTime();
-      const bt = this.parseDate(b.date).getTime();
+      const at = parseIsoDate(a.date).getTime();
+      const bt = parseIsoDate(b.date).getTime();
       if (at !== bt) return bt - at;
       if (a.time && b.time) return b.time.localeCompare(a.time);
       return 0;
@@ -134,27 +126,39 @@ export class EventComponent {
   submitCreateForm() {
     this.createSubmitted = true;
     if (!this.createModel.title || !this.createModel.date || !this.createModel.time || !this.createModel.excerpt) return;
-    const dateDisplay = new Date(this.createModel.date).toLocaleDateString(undefined,{ month:'short', day:'numeric', year:'numeric'});
+    const dateDisplay = formatIsoDisplay(this.createModel.date);
     this.postEvent({ ...this.createModel, dateDisplay });
   }
 
   startEdit() {
     if (!this.selected || !this.auth.isAdmin()) return;
+    // Clone first (so values exist at first render) then flip editing flag
+    // Normalize date to YYYY-MM-DD (in case any time portion sneaks in) for <input type="date">
+    const normalizedDate = this.selected.date ? this.selected.date.substring(0,10) : '';
+    // Normalize time to HH:MM for <input type="time"> (strip seconds if present)
+    let normalizedTime = this.selected.time || '';
+    if (normalizedTime && normalizedTime.length >= 5) {
+      // Accept formats like HH:MM or HH:MM:SS -> take first 5 chars
+      normalizedTime = normalizedTime.substring(0,5);
+    }
+    this.editModel = { ...this.selected, date: normalizedDate, time: normalizedTime };
+    // Store pristine snapshot for accurate dirty comparison (avoid comparing against original selected which may have different formatting)
+    this.pristineEditSnapshot = { ...this.editModel };
     this.editing = true;
-    // clone selected into edit model
-    this.editModel = { ...this.selected };
   }
 
   cancelEdit() {
     this.editing = false;
     this.updateSaving = false;
     this.editModel = {};
+    this.pristineEditSnapshot = null;
   }
 
   get isEditDirty(): boolean {
     if (!this.selected || !this.editing) return false;
+    if (!this.pristineEditSnapshot) return false;
     const fields: (keyof MunicipalEvent)[] = ['title','date','time','location','excerpt'];
-    return fields.some(k => (this.editModel as any)[k] !== (this.selected as any)[k]);
+    return fields.some(k => (this.editModel as any)[k] !== (this.pristineEditSnapshot as any)[k]);
   }
 
   saveUpdate() {
@@ -188,49 +192,16 @@ export class EventComponent {
     this.editSubmitted = true;
     if (!this.editModel.title || !this.editModel.date || !this.editModel.time || !this.editModel.excerpt) return;
     if (!this.isEditDirty) { this.cancelEdit(); return; }
-    // compute dateDisplay if changed
     if (this.selected) {
-      const dateDisplay = new Date(this.editModel.date as string).toLocaleDateString(undefined,{ month:'short', day:'numeric', year:'numeric'});
-      this.editModel.dateDisplay = dateDisplay;
+      this.editModel.dateDisplay = formatIsoDisplay(this.editModel.date as string);
     }
+    // After successful save we will refresh selected via response; snapshot cleared in cancelEdit()
     this.saveUpdate();
   }
 
-  isPast(ev: MunicipalEvent): boolean {
-    const d = new Date(ev.date + (ev.date.length === 10 ? 'T00:00:00' : ''));
-    if (isNaN(d.getTime())) return false;
-    const todayMidnight = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime();
-    return d.getTime() < todayMidnight;
-  }
-
-  isToday(ev: MunicipalEvent): boolean {
-    const d = this.parseDate(ev.date);
-    if (isNaN(d.getTime())) return false;
-    const now = new Date();
-    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
-  }
-
-  isNearUpcoming(ev: MunicipalEvent): boolean {
-    // Next 7 days (excluding today). Adjust window as needed.
-    const d = this.parseDate(ev.date);
-    if (isNaN(d.getTime())) return false;
-    const now = new Date();
-    const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const targetMid = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-    if (targetMid <= todayMid) return false; // not today or past
-    const diffDays = (targetMid - todayMid) / (1000 * 60 * 60 * 24);
-    return diffDays <= 7; // within next 7 days
-  }
-
-  // Days until the event (integer, only valid for future dates)
-  daysUntil(ev: MunicipalEvent): number {
-    const d = this.parseDate(ev.date);
-    if (isNaN(d.getTime())) return NaN;
-    const now = new Date();
-    const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const targetMid = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-    if (targetMid < todayMid) return 0;
-    return Math.round((targetMid - todayMid) / (1000 * 60 * 60 * 24));
-  }
+  isPast(ev: MunicipalEvent): boolean { return isIsoPast(ev.date); }
+  isToday(ev: MunicipalEvent): boolean { return isIsoToday(ev.date); }
+  isNearUpcoming(ev: MunicipalEvent): boolean { return isIsoWithinNextDays(ev.date, 7); }
+  daysUntil(ev: MunicipalEvent): number { return daysUntilIso(ev.date); }
   get isAdmin(): boolean { return this.auth.isAdmin(); }
 }

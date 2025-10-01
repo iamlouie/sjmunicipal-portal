@@ -1,4 +1,4 @@
-import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
+import { Component, HostBinding, HostListener, OnInit, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NgFor } from '@angular/common';
 
@@ -9,7 +9,7 @@ import { NgFor } from '@angular/common';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostBinding('class.collapsed') collapsed = false;
   private autoMode = true; // true while collapse state is governed by viewport size
 
@@ -41,12 +41,30 @@ export class SidebarComponent implements OnInit {
     }
   ];
 
+  @ViewChild('scrollRef') scrollEl?: ElementRef<HTMLElement>;
+  private needsScroll = false;
+  private mutationObserver?: MutationObserver;
+
   ngOnInit() {
     this.applyResponsiveCollapse();
   }
 
+  ngAfterViewInit() {
+    this.evaluateScroll();
+    // Observe dynamic changes inside the scroll container
+    if (this.scrollEl) {
+      this.mutationObserver = new MutationObserver(() => this.evaluateScroll());
+      this.mutationObserver.observe(this.scrollEl.nativeElement, { childList: true, subtree: true });
+    }
+  }
+
+  ngOnDestroy() {
+    this.mutationObserver?.disconnect();
+  }
+
   @HostListener('window:resize') onResize() {
     this.applyResponsiveCollapse();
+    this.evaluateScroll();
   }
 
   private applyResponsiveCollapse() {
@@ -65,5 +83,21 @@ export class SidebarComponent implements OnInit {
     // User explicitly overrides; stop auto mode until next navigation/refresh
     this.autoMode = false;
     this.collapsed = !this.collapsed;
+    // After animation, reevaluate scroll necessity
+    setTimeout(() => this.evaluateScroll(), 400);
+  }
+
+  private evaluateScroll() {
+    if (!this.scrollEl) return;
+    const el = this.scrollEl.nativeElement;
+    const shouldScroll = el.scrollHeight > el.clientHeight + 2; // fudge factor
+    if (shouldScroll !== this.needsScroll) {
+      this.needsScroll = shouldScroll;
+      if (shouldScroll) {
+        el.classList.add('sidebar__scroll--show');
+      } else {
+        el.classList.remove('sidebar__scroll--show');
+      }
+    }
   }
 }

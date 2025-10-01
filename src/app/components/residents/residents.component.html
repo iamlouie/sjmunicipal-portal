@@ -165,7 +165,7 @@
 <!-- Modal -->
 <!-- Important Notice Modal -->
 <div class="modal-backdrop" *ngIf="showNotice" aria-hidden="true"></div>
-<div class="modal notice-modal" *ngIf="showNotice" role="dialog" aria-modal="true" aria-labelledby="residents-notice-title">
+<div class="modal modal--center notice-modal" *ngIf="showNotice" role="dialog" aria-modal="true" aria-labelledby="residents-notice-title">
   <div class="modal__inner notice-modal__inner">
     <div class="notice-strip" aria-hidden="true"></div>
     <h3 class="modal__title notice-modal__title" id="residents-notice-title"><span class="notice-icon" aria-hidden="true">⚠️</span> Important Notice</h3>
@@ -195,12 +195,11 @@
   </div>
 </div>
 <div class="modal-backdrop" *ngIf="showModal" (click)="close()" aria-hidden="true"></div>
-<div class="modal" *ngIf="showModal && selected as sel" role="dialog" aria-modal="true" [attr.aria-labelledby]="'resident-title-' + sel.id">
+<div class="modal modal--center" *ngIf="showModal && selected as sel" role="dialog" aria-modal="true" [attr.aria-labelledby]="'resident-title-' + sel.id">
   <div class="modal__inner">
     <div class="modal__section-title" [id]="'resident-title-' + sel.id">
       <span class="modal__icon" aria-hidden="true">👤</span>
       RESIDENT PROFILE
-      <button type="button" class="modal__close" (click)="close()" aria-label="Close resident profile">×</button>
     </div>
     <h3 class="modal__title" *ngIf="!editing">{{ sel.firstName }} {{ sel.middleName }} {{ sel.lastName }}</h3>
     <form class="create-form" *ngIf="editing" (ngSubmit)="submitEditProfile()" novalidate [class.form--dirty]="isEditDirty">
@@ -268,7 +267,7 @@
         </div>
           <div class="contact-field">
             <label for="edContact">Contact Number</label>
-            <input id="edContact" name="edContact" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="11" [(ngModel)]="editModel.contactNumber" (input)="sanitizeEditContact(); markEditChanged('contactNumber')" [class.field-changed]="editChanged['contactNumber']" placeholder="09XXXXXXXXX" />
+            <input id="edContact" name="edContact" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="11" [(ngModel)]="editModel.contactNumber" (keydown)="onContactKeyDown($event)" (paste)="onContactPaste($event, true)" (input)="sanitizeEditContact(); markEditChanged('contactNumber')" [class.field-changed]="editChanged['contactNumber']" placeholder="09XXXXXXXXX" />
           </div>
           <div class="age-field">
             <label>Age (auto)</label>
@@ -302,12 +301,11 @@
 
 <!-- Create Resident Modal -->
 <div class="modal-backdrop" *ngIf="showCreate" aria-hidden="true"></div>
-<div class="modal" *ngIf="showCreate" role="dialog" aria-modal="true" aria-labelledby="create-resident-title">
+<div class="modal modal--center" *ngIf="showCreate" role="dialog" aria-modal="true" aria-labelledby="create-resident-title">
   <div class="modal__inner">
     <div class="modal__section-title" id="create-resident-title">
       <span class="modal__icon" aria-hidden="true">➕</span>
       ADD RESIDENT
-      <button type="button" class="modal__close" (click)="cancelCreate()" aria-label="Close add resident form">×</button>
     </div>
     <form (ngSubmit)="saveResident()" class="create-form" #createForm="ngForm">
       <div class="form__row form__row--inline">
@@ -326,8 +324,8 @@
       </div>
       <div class="form__row form__row--inline">
         <div>
-          <label for="crBirthday">Birthday</label>
-          <input id="crBirthday" name="crBirthday" type="date" [ngModel]="createModel.birthday" (ngModelChange)="onBirthdayChange($event)" />
+          <label for="crBirthday">Birthday <span class="req" aria-hidden="true">*</span></label>
+          <input id="crBirthday" name="crBirthday" type="date" required [(ngModel)]="createModel.birthday" (ngModelChange)="onBirthdayChange($event)" />
         </div>
         <div>
           <label for="crGender">Gender <span class="req" aria-hidden="true">*</span></label>
@@ -374,7 +372,7 @@
         </div>
           <div class="contact-field">
             <label for="crContact">Contact Number</label>
-            <input id="crContact" name="crContact" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="11" [(ngModel)]="createModel.contactNumber" (input)="sanitizeContact()" placeholder="09XXXXXXXXX" />
+            <input id="crContact" name="crContact" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="11" [(ngModel)]="createModel.contactNumber" (keydown)="onContactKeyDown($event)" (paste)="onContactPaste($event)" (input)="sanitizeContact()" placeholder="09XXXXXXXXX" />
           </div>
           <div class="age-field">
             <label>Age (auto)</label>
@@ -386,7 +384,7 @@
       <!-- Removed voter & 4Ps checkboxes -->
       <div class="modal__footer">
         <button type="button" class="modal__btn modal__btn--secondary" (click)="cancelCreate()">Cancel</button>
-        <button type="submit" class="modal__btn modal__btn--primary" [disabled]="!isCreateValid() || saving">{{ saving ? 'Saving...' : 'Save Resident' }}</button>
+  <button type="submit" class="modal__btn modal__btn--primary" [class.modal__btn--disabled]="disableCreateSave" [disabled]="disableCreateSave">{{ saving ? 'Saving...' : 'Save Resident' }}</button>
       </div>
     </form>
   </div>

@@ -39,7 +39,7 @@ export class ProjectComponent implements OnInit {
   load() {
     this.loading.set(true);
     this.error.set(null);
-  const API_BASE = 'http://localhost:4300'; // inlined per request
+  const API_BASE = 'https://my-json-db-3.onrender.com/projects'; // inlined per request
   this.http.get<Project[]>(`${API_BASE}/projects`).subscribe({
       next: list => {
         this.projects.set(list);

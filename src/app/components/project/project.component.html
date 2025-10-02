@@ -1,0 +1,45 @@
+<div class="section-head">
+	<h2 class="welcome-head animate-in" id="projects-heading">Municipal <em>Projects</em></h2>
+</div>
+<div class="intro-bar projects__intro animate-in-delayed" id="projects-intro">
+	<p class="intro-bar__text">Plan, track, and monitor infrastructure and community development initiatives across the municipality.</p>
+</div>
+<section class="projects" aria-labelledby="projects-heading" aria-describedby="projects-intro">
+	<div *ngIf="loading()" class="placeholder" aria-live="polite">Loading projects...</div>
+	<div *ngIf="!loading() && error()" class="placeholder error" role="alert">Failed to load projects: {{ error() }}</div>
+	<div class="table-wrap" role="region" aria-label="Projects table container" *ngIf="!loading() && !error() && projects().length; else noProjects">
+		<table class="res-table" aria-describedby="projects-intro">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Project Name</th>
+					<th scope="col">Category</th>
+					<th scope="col">Location</th>
+					<th scope="col">Status</th>
+					<th scope="col">Start</th>
+					<th scope="col">Target End</th>
+					<th scope="col">Budget</th>
+					<th scope="col">Progress</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let p of projects(); let i = index; trackBy: trackById">
+					<td>{{ i + 1 }}</td>
+					<td>{{ p.name }}</td>
+					<td>{{ p.category }}</td>
+					<td>{{ p.location }}</td>
+					<td>
+						<span class="status-chip" [class.status-chip--planning]="p.status==='Planning'" [class.status-chip--ongoing]="p.status==='Ongoing'" [class.status-chip--procurement]="p.status==='Procurement'">{{ p.status }}</span>
+					</td>
+					<td>{{ p.startDate }}</td>
+					<td>{{ p.targetEndDate }}</td>
+					<td>₱{{ p.budget | number:'1.0-0' }}</td>
+					<td>{{ p.percentComplete }}%</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<ng-template #noProjects>
+		<div class="placeholder" *ngIf="!loading() && !error()">No project records yet.</div>
+	</ng-template>
+</section>

@@ -1,0 +1,20 @@
+{
+  "/projects": {
+    "target": "http://localhost:4300",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info"
+  },
+  "/events": {
+    "target": "http://localhost:4300",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info"
+  },
+  "/announcements": {
+    "target": "http://localhost:4300",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info"
+  }
+}

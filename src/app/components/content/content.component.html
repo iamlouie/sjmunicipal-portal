@@ -1,7 +1,11 @@
+<div class="section-head">
+  <h2 class="welcome-head animate-in" aria-label="Welcome message">Welcome to San Juan <em>Cabalian</em> Municipal Portal</h2>
+</div>
+<div class="intro-bar animate-in-delayed">
+  <p class="welcome-tag">Streamlining services, insights, and operations for our community.</p>
+</div>
 <section class="welcome position-relative">
   <div class="inner hero-panel">
-  <h2 class="welcome-head animate-in" aria-label="Welcome message">Welcome to San Juan <em>Cabalian</em> Municipal Portal</h2>
-  <p class="welcome-tag animate-in-delayed">Streamlining services, insights, and operations for our community.</p>
   <div class="c-carousel" role="region" aria-label="Municipal showcase" (mouseenter)="pause()" (mouseleave)="resume()">
       <div class="c-slides">
         <figure *ngFor="let s of slides; let i = index" class="c-slide" [class.active]="i===current" [attr.aria-hidden]="i===current ? 'false':'true'">
@@ -51,7 +55,7 @@
       <p class="metric__delta neutral">On Track</p>
     </div>
     <div class="card metric">
-      <h3><span class="metric__icon" aria-hidden="true">🛠️</span>Open Job Orders</h3>
+      <h3><span class="metric__icon" aria-hidden="true">🛠️</span>Open Projects</h3>
       <p class="metric__value">87</p>
       <p class="metric__delta warning">+12 pending</p>
     </div>

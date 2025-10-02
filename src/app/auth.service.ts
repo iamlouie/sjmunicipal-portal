@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, effect } from '@angular/core';
 
 export interface AuthUser {
   username: string;
@@ -10,6 +10,30 @@ export interface AuthUser {
 export class AuthService {
   private _user = signal<AuthUser | null>(null);
   user = this._user.asReadonly();
+
+  private STORAGE_KEY = 'app.auth.user';
+
+  constructor() {
+    // Attempt restore on creation
+    try {
+      const raw = localStorage.getItem(this.STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as AuthUser & { loggedInAt: string };
+        // Rehydrate date
+        this._user.set({ username: parsed.username, role: parsed.role, loggedInAt: new Date(parsed.loggedInAt) });
+      }
+    } catch { /* ignore restore errors */ }
+
+    // Persist on change
+    effect(() => {
+      const u = this._user();
+      if (u) {
+        try { localStorage.setItem(this.STORAGE_KEY, JSON.stringify(u)); } catch { /* ignore */ }
+      } else {
+        try { localStorage.removeItem(this.STORAGE_KEY); } catch { /* ignore */ }
+      }
+    });
+  }
 
   isAuthenticated() { return this._user() !== null; }
 

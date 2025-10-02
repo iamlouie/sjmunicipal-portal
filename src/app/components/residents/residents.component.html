@@ -22,10 +22,21 @@
           </button>
         </div>
         <div class="filters-bar__right" *ngIf="isAdmin">
-          <button type="button" class="add-btn" (click)="openCreate()" aria-label="Add new resident">
-            <span class="btn-icon" aria-hidden="true">➕</span>
-            <span class="btn-label">Add Resident</span>
-          </button>
+          <div class="admin-actions admin-actions--right">
+            <button type="button" class="icon-btn export-btn" (click)="exportResidents()" aria-label="Export residents">
+              <span class="btn-icon" aria-hidden="true">📤</span>
+              <span class="btn-label">Export</span>
+            </button>
+            <label class="icon-btn import-btn" aria-label="Import residents">
+              <input type="file" accept="application/json,.json" (change)="onImportFile($event)" hidden />
+              <span class="btn-icon" aria-hidden="true">📥</span>
+              <span class="btn-label">Import</span>
+            </label>
+            <button type="button" class="add-btn" (click)="openCreate()" aria-label="Add new resident">
+              <span class="btn-icon" aria-hidden="true">➕</span>
+              <span class="btn-label">Add Resident</span>
+            </button>
+          </div>
         </div>
       </div>
       <div class="filters-panel" *ngIf="showFilters" role="region" aria-label="Residents filters">

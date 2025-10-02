@@ -1,0 +1,52 @@
+<div class="section-head">
+  <h2 class="welcome-head animate-in" id="inquiries-heading">Service <em>Inquiry</em></h2>
+</div>
+<div class="intro-bar inquiries__intro animate-in-delayed" id="inquiries-intro">
+  <p class="intro-bar__text">A central place where people ask questions, submit service concerns, and follow up on municipal requests.</p>
+</div>
+<section class="inquiries" aria-labelledby="inquiries-heading" aria-describedby="inquiries-intro">
+  <div class="inquiry-layout">
+    <div class="inquiry-form-card">
+      <h3 class="inquiry-form__title">Submit an Inquiry</h3>
+      <p class="inquiry-form__hint">Ask a question, request a service, or follow up on an existing municipal concern.</p>
+      <form novalidate (ngSubmit)="submit()" #inqForm="ngForm">
+        <div class="form-field">
+          <label for="name">Name <span class="req">*</span></label>
+          <input id="name" name="name" [(ngModel)]="model.name" required minlength="2" [class.invalid]="formTouched && model.name.trim().length < 2" placeholder="Your full name">
+          <div class="field-hint" *ngIf="formTouched && model.name.trim().length < 2">Minimum 2 characters.</div>
+        </div>
+        <div class="form-field">
+          <label for="contact">Contact Number <span class="req">*</span></label>
+          <input id="contact" name="contact" type="tel" inputmode="numeric" pattern="[0-9]*" (input)="onContactInput($event)" [(ngModel)]="model.contact" required minlength="7" [class.invalid]="formTouched && model.contact.trim().length < 7" placeholder="e.g. 09XXXXXXXXX">
+          <div class="field-hint" *ngIf="formTouched && model.contact.trim().length < 7">Minimum 7 digits (mobile preferred).</div>
+        </div>
+        <div class="form-field">
+          <label for="subject">Subject <span class="req">*</span></label>
+          <input id="subject" name="subject" [(ngModel)]="model.subject" required minlength="4" [class.invalid]="formTouched && model.subject.trim().length < 4" placeholder="Brief summary (e.g. Road repair status)">
+          <div class="field-hint" *ngIf="formTouched && model.subject.trim().length < 4">Minimum 4 characters.</div>
+        </div>
+        <div class="form-field">
+          <label for="barangay">Barangay <span class="req">*</span></label>
+          <select id="barangay" name="barangay" [(ngModel)]="model.barangay" required [class.invalid]="formTouched && !model.barangay">
+            <option value="" disabled selected>Select barangay</option>
+            <option *ngFor="let b of barangays" [value]="b">{{ b }}</option>
+          </select>
+          <div class="field-hint" *ngIf="formTouched && !model.barangay">Please select a barangay.</div>
+        </div>
+        <div class="form-field">
+          <label for="details">Details <span class="req">*</span></label>
+          <textarea id="details" name="details" rows="4" [(ngModel)]="model.details" required minlength="10" [class.invalid]="formTouched && model.details.trim().length < 10" placeholder="Provide details so we can assist you effectively..."></textarea>
+          <div class="field-hint" *ngIf="formTouched && model.details.trim().length < 10">Minimum 10 characters.</div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="resetForm()" [disabled]="submitting">Reset</button>
+          <button type="submit" class="btn-primary" [disabled]="!isValid || submitting">
+            <span *ngIf="!submitting">Submit Inquiry</span>
+            <span *ngIf="submitting">Submitting...</span>
+          </button>
+        </div>
+        <div class="success-msg" *ngIf="successMessage">{{ successMessage }}</div>
+      </form>
+    </div>
+  </div>
+</section>

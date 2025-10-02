@@ -3,7 +3,7 @@
 	<div class="login-modal__backdrop"></div>
 	<div class="login-modal__dialog" role="document">
 		<button class="login-modal__close" (click)="handleClose()" aria-label="Close login dialog">×</button>
-		<h2 id="loginDialogTitle" class="login-modal__title">Administrator</h2>
+		<h2 id="loginDialogTitle" class="login-modal__title">Employee Login</h2>
 		<p class="login-modal__intro">Enter your credentials to continue.</p>
 		<form #loginForm="ngForm" (ngSubmit)="submit(loginForm)" novalidate class="login-form" [class.submitting]="submitting">
 			<div class="form-field">

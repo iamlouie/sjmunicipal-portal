@@ -210,6 +210,138 @@
       "id": 21
     }
   ],
+  "projects": [
+    {
+      "id": 1,
+      "name": "Flood Control Phase 2",
+      "category": "Infrastructure",
+      "status": "Ongoing",
+      "startDate": "2025-07-15",
+      "targetEndDate": "2026-02-28",
+      "budget": 12500000,
+      "fundSource": "LGU + National Grant",
+      "percentComplete": 42,
+      "description": "Continuation of drainage widening and riverbank reinforcement.",
+      "location": "Poblacion" 
+    },
+    {
+      "id": 2,
+      "name": "Public Market Roof Retrofit",
+      "category": "Infrastructure",
+      "status": "Planning",
+      "startDate": "2025-11-01",
+      "targetEndDate": "2026-03-30",
+      "budget": 4200000,
+      "fundSource": "LGU Capital Outlay",
+      "percentComplete": 5,
+      "description": "Structural repair and installation of skylight ventilation panels.",
+      "location": "Zone 2" 
+    },
+    {
+      "id": 3,
+      "name": "Barangay Health Center Upgrade",
+      "category": "Health",
+      "status": "Ongoing",
+      "startDate": "2025-08-10",
+      "targetEndDate": "2025-12-20",
+      "budget": 2800000,
+      "fundSource": "DOH Matching Fund",
+      "percentComplete": 63,
+      "description": "Expansion of consultation rooms and cold storage installation.",
+      "location": "San Roque" 
+    },
+    {
+      "id": 4,
+      "name": "Agri Supply Cold Storage",
+      "category": "Agriculture",
+      "status": "Procurement",
+      "startDate": "2025-10-05",
+      "targetEndDate": "2026-05-15",
+      "budget": 5600000,
+      "fundSource": "Provincial Assistance",
+      "percentComplete": 12,
+      "description": "Construction of temperature-controlled storage for harvest consolidation.",
+      "location": "Barangay East" 
+    },
+    {
+      "id": 5,
+      "name": "Coastal Erosion Barrier",
+      "category": "Environment",
+      "status": "Ongoing",
+      "startDate": "2025-06-01",
+      "targetEndDate": "2026-01-10",
+      "budget": 9100000,
+      "fundSource": "DENR + LGU",
+      "percentComplete": 55,
+      "description": "Installation of geo-textile tubes and vegetative stabilization.",
+      "location": "Coastal Barangay 4" 
+    },
+    {
+      "id": 6,
+      "name": "Smart Street Lighting Pilot",
+      "category": "Energy",
+      "status": "Ongoing",
+      "startDate": "2025-09-12",
+      "targetEndDate": "2025-12-30",
+      "budget": 1500000,
+      "fundSource": "Energy Efficiency Grant",
+      "percentComplete": 34,
+      "description": "Deployment of LED + IoT monitored poles along main thoroughfares.",
+      "location": "Central District" 
+    },
+    {
+      "id": 7,
+      "name": "Tourism Circuit Signage Phase 1",
+      "category": "Tourism",
+      "status": "Planning",
+      "startDate": "2025-10-20",
+      "targetEndDate": "2026-04-01",
+      "budget": 1800000,
+      "fundSource": "Tourism Dev Fund",
+      "percentComplete": 3,
+      "description": "Design and fabrication of standardized directional markers.",
+      "location": "Heritage Zone" 
+    },
+    {
+      "id": 8,
+      "name": "Water Potability Monitoring System",
+      "category": "Health",
+      "status": "Procurement",
+      "startDate": "2025-09-25",
+      "targetEndDate": "2026-02-05",
+      "budget": 2400000,
+      "fundSource": "Public Health Fund",
+      "percentComplete": 18,
+      "description": "Acquisition of sensors and lab equipment for quarterly testing.",
+      "location": "Poblacion" 
+    },
+    {
+      "id": 9,
+      "name": "Organic Waste Composting Facility",
+      "category": "Environment",
+      "status": "Ongoing",
+      "startDate": "2025-07-05",
+      "targetEndDate": "2025-12-18",
+      "budget": 3300000,
+      "fundSource": "Climate Resilience Fund",
+      "percentComplete": 61,
+      "description": "Mechanical shredders and windrow composting site development.",
+      "location": "Eco Park Vicinity" 
+    },
+    {
+      "id": 10,
+      "name": "Multi-Purpose Evacuation Center",
+      "category": "Infrastructure",
+      "status": "Planning",
+      "startDate": "2025-11-10",
+      "targetEndDate": "2026-08-30",
+      "budget": 18500000,
+      "fundSource": "NDRRMC + LGU",
+      "percentComplete": 2,
+      "description": "Design phase for resilient, gender-sensitive evacuation complex.",
+      "location": "Barangay North" 
+    }
+  ],
   "announcements": [
     {
       "id": 1,
@@ -217,7 +349,8 @@
       "date": "2025-09-29",
       "dateDisplay": "Sep 29, 2025",
       "excerpt": "Portions of Riverside Avenue will be partially closed for asphalt overlay.",
-      "type": "Advisory"
+      "type": "Advisory",
+      "location": "Riverside Avenue"
     },
     {
       "id": 2,
@@ -225,7 +358,8 @@
       "date": "2025-09-29",
       "dateDisplay": "Sep 29, 2025",
       "excerpt": "Scheduled maintenance may affect Barangays 1–3 from 1PM to 5PM.",
-      "type": "Notice"
+      "type": "Notice",
+      "location": "Barangays 1–3"
     },
     {
       "id": 3,
@@ -233,7 +367,8 @@
       "date": "2025-09-27",
       "dateDisplay": "Sept 27, 2025",
       "excerpt": "Senior high and college students may submit requirements until Oct 15.",
-      "type": "Education"
+      "type": "Education",
+      "location": "Municipal Scholarship Desk"
     },
     {
       "id": 4,
@@ -241,7 +376,8 @@
       "date": "2025-09-28",
       "dateDisplay": "Sept 28, 2025",
       "excerpt": "Early renewal encouraged to avoid January processing queues.",
-      "type": "Business"
+      "type": "Business",
+      "location": "Business Permits Office"
     },
     {
       "id": 5,
@@ -249,7 +385,8 @@
       "date": "2025-09-29",
       "dateDisplay": "Sept 29, 2025",
       "excerpt": "Mandatory assemblies set for all barangays next month.",
-      "type": "Governance"
+      "type": "Governance",
+      "location": "All Barangays"
     },
     {
       "id": 6,
@@ -257,7 +394,8 @@
       "date": "2025-09-30",
       "dateDisplay": "Sept 30, 2025",
       "excerpt": "Additional vaccine doses allocated; priority groups expanded.",
-      "type": "Health"
+      "type": "Health",
+      "location": "Rural Health Unit"
     },
     {
       "id": 7,
@@ -265,7 +403,8 @@
       "date": "2025-10-01",
       "dateDisplay": "Oct 1, 2025",
       "excerpt": "Residents urged to review family emergency plans before typhoon season.",
-      "type": "Safety"
+      "type": "Safety",
+      "location": "Municipal DRRM Office"
     },
     {
       "id": 8,
@@ -273,7 +412,8 @@
       "date": "2025-10-02",
       "dateDisplay": "Oct 2, 2025",
       "excerpt": "Public market zoning changes will take effect mid-October.",
-      "type": "Market"
+      "type": "Market",
+      "location": "Public Market"
     },
     {
       "id": 9,
@@ -281,7 +421,8 @@
       "date": "2025-10-03",
       "dateDisplay": "Oct 3, 2025",
       "excerpt": "LGU intensifies monitoring for proper biodegradable disposal.",
-      "type": "Environment"
+      "type": "Environment",
+      "location": "Selected Barangays"
     },
     {
       "id": 10,
@@ -289,7 +430,8 @@
       "date": "2025-10-04",
       "dateDisplay": "Oct 4, 2025",
       "excerpt": "Temporary rerouting due to drainage project along Central Road.",
-      "type": "Transport"
+      "type": "Transport",
+      "location": "Central Road"
     },
     {
       "id": 11,
@@ -297,7 +439,8 @@
       "date": "2025-10-05",
       "dateDisplay": "Oct 5, 2025",
       "excerpt": "Discount incentives available for advance settlement.",
-      "type": "Finance"
+      "type": "Finance",
+      "location": "Treasury Office"
     },
     {
       "id": 12,
@@ -305,7 +448,8 @@
       "date": "2025-10-06",
       "dateDisplay": "Oct 6, 2025",
       "excerpt": "Showcasing indigenous textiles and artifacts at Municipal Museum.",
-      "type": "Culture"
+      "type": "Culture",
+      "location": "Municipal Museum"
     },
     {
       "id": 13,
@@ -313,7 +457,8 @@
       "date": "2025-10-07",
       "dateDisplay": "Oct 7, 2025",
       "excerpt": "Phase 2 construction now 75% complete according to engineers.",
-      "type": "Infrastructure"
+      "type": "Infrastructure",
+      "location": "Flood Control Site"
     },
     {
       "id": 14,
@@ -321,7 +466,8 @@
       "date": "2025-10-08",
       "dateDisplay": "Oct 8, 2025",
       "excerpt": "Volunteer lawyers to assist with civil documentation issues.",
-      "type": "Legal"
+      "type": "Legal",
+      "location": "Session Hall"
     },
     {
       "id": 15,
@@ -329,7 +475,8 @@
       "date": "2025-10-09",
       "dateDisplay": "Oct 9, 2025",
       "excerpt": "Malnutrition program expands to additional daycare centers.",
-      "type": "Health"
+      "type": "Health",
+      "location": "Daycare Centers"
     },
     {
       "id": 16,
@@ -337,7 +484,8 @@
       "date": "2025-10-10",
       "dateDisplay": "Oct 10, 2025",
       "excerpt": "Registered rice farmers may claim vouchers at the Agri Office.",
-      "type": "Agriculture"
+      "type": "Agriculture",
+      "location": "Agriculture Office"
     },
     {
       "id": 17,
@@ -345,7 +493,8 @@
       "date": "2025-10-11",
       "dateDisplay": "Oct 11, 2025",
       "excerpt": "Public comment now open for proposed marine safeguards.",
-      "type": "Environment"
+      "type": "Environment",
+      "location": "Coastal Barangay 4"
     },
     {
       "id": 18,
@@ -353,7 +502,8 @@
       "date": "2025-10-12",
       "dateDisplay": "Oct 12, 2025",
       "excerpt": "Stakeholders invited to provide feedback on expansion areas.",
-      "type": "Planning"
+      "type": "Planning",
+      "location": "People's Hall"
     },
     {
       "id": 19,
@@ -361,7 +511,8 @@
       "date": "2025-10-13",
       "dateDisplay": "Oct 13, 2025",
       "excerpt": "Online services may be intermittently unavailable after 9PM.",
-      "type": "IT"
+      "type": "IT",
+      "location": "IT Operations"
     },
     {
       "id": 20,
@@ -369,28 +520,32 @@
       "date": "2025-10-14",
       "dateDisplay": "Oct 14, 2025",
       "excerpt": "Summary of past year’s gender mainstreaming initiatives released.",
-      "type": "Governance"
+      "type": "Governance",
+      "location": "People's Hall"
     },
     {
       "title": "test112322232",
       "date": "2026-01-01",
       "excerpt": "test123223",
       "dateDisplay": "Jan 1, 2026",
-      "id": 21
+      "id": 21,
+      "location": "Test Area"
     },
     {
       "title": "ADADAADADAadsadasd",
       "date": "2026-01-22",
       "dateDisplay": "Jan 22, 2026",
       "excerpt": "qweeqwewsadadasdadas",
-      "id": 22
+      "id": 22,
+      "location": "Zone 5"
     },
     {
       "title": "Test",
       "date": "2025-09-23",
       "dateDisplay": "Sep 23, 2025",
       "excerpt": "test",
-      "id": 23
+      "id": 23,
+      "location": "Sample Point"
     }
   ],
   "facilities": [

@@ -1,10 +1,11 @@
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { HistoryService, HistoryEntry as StoredEntry } from './history.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LoginComponent } from '../login/login.component';
 import { AuthService } from '../../auth.service';
+import { LoginGateService } from '../../login-gate.service';
 import { ToastService } from '../../toast.service';
 interface HistoryEntry { action: 'add' | 'update' | 'delete' | 'other'; message: string; when: Date; }
 
@@ -24,9 +25,10 @@ export class HeaderComponent {
   constructor(
     private el: ElementRef,
     private historySvc: HistoryService,
-  public auth: AuthService,
+    public auth: AuthService,
     private toast: ToastService,
-  private router: Router,
+    private router: Router,
+    private gate: LoginGateService,
   ) {
     // Load existing stored entries
     this.history = historySvc.getAll().map(this.mapStored);
@@ -40,6 +42,12 @@ export class HeaderComponent {
         { action: 'update' as const, message: 'Modified org chart positions', when: new Date(Date.now() - 1000 * 60 * 120) },
       ].forEach(e => this.pushAndPersist(e));
     }
+    // Effect: open login modal automatically when a protected route requested
+    effect(() => {
+      if (this.gate.requested()) {
+        this.loginOpen = true;
+      }
+    });
   }
 
   private mapStored = (s: StoredEntry): HistoryEntry => ({ action: s.action, message: s.message, when: new Date(s.when) });
@@ -59,8 +67,15 @@ export class HeaderComponent {
   closeMenu() { this.menuOpen = false; this.historyOpen = false; }
 
   openLogin() { this.loginOpen = true; }
-  closeLogin() { this.loginOpen = false; }
-  onLoggedIn(user: string) { this.loginOpen = false; }
+  closeLogin() { this.loginOpen = false; this.gate.clearRequest(); }
+  onLoggedIn(user: string) {
+    this.loginOpen = false;
+    const dest = this.gate.consumeRedirect();
+    this.gate.clearRequest();
+    if (dest) {
+      this.router.navigateByUrl(dest);
+    }
+  }
 
   logout() {
     const name = this.auth.user()?.username;

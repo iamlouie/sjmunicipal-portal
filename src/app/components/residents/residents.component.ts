@@ -494,6 +494,67 @@ export class ResidentsComponent {
   get disableCreateSave(): boolean {
     return !this.isCreateValid() || !this.isCreateDirty || this.saving;
   }
+  // Export residents (current filtered) as JSON file
+  exportResidents() {
+    if (!this.isAdmin) return;
+    const data = JSON.stringify(this.filtered, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'residents-export.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    this.toast.success('Residents exported');
+  }
+  // Import residents from JSON file (append; basic validation)
+  onImportFile(ev: Event) {
+    if (!this.isAdmin) return;
+    const input = ev.target as HTMLInputElement;
+    if (!input.files || !input.files.length) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result as string);
+        if (!Array.isArray(parsed)) throw new Error('Invalid format');
+        const added: Resident[] = [];
+        parsed.forEach((r: any) => {
+          if (r && r.firstName && r.lastName && r.barangay) {
+            const newResident: Resident = {
+              id: this.nextId(),
+              firstName: String(r.firstName),
+              middleName: String(r.middleName||''),
+              lastName: String(r.lastName),
+              age: Number(r.age) || 0,
+              gender: String(r.gender||'') ,
+              occupation: String(r.occupation||''),
+              barangay: String(r.barangay),
+              civilStatus: String(r.civilStatus||'Single'),
+              status: (r.status === 'Deceased' ? 'Deceased':'Active'),
+              street: r.street ? String(r.street) : undefined,
+              birthday: r.birthday ? String(r.birthday) : undefined,
+              contactNumber: r.contactNumber ? String(r.contactNumber) : undefined
+            };
+            this.residents.push(newResident);
+            added.push(newResident);
+          }
+        });
+        if (added.length) {
+          this.applyFilters();
+          this.toast.success(`Imported ${added.length} resident${added.length===1?'':'s'}`);
+        } else {
+          this.toast.info('No valid residents found in file');
+        }
+      } catch (e) {
+        console.error('Import failed', e);
+        this.toast.error('Failed to import residents');
+      } finally {
+        input.value = '';
+      }
+    };
+    reader.readAsText(file);
+  }
   // Exposed for template conditionals
   get isAdmin(): boolean { return this.auth.isAdmin(); }
   // Determine if any edit field changed

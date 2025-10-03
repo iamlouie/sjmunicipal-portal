@@ -85,7 +85,7 @@
 				</label>
 			</ng-container>
 		</div>
-		<div class="actions actions--lower">
+		<div class="actions actions--lower" *ngIf="form().type">
 			<button type="submit" class="btn-primary" [disabled]="!canSubmit() || submitting()">Submit</button>
 		</div>
 

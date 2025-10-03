@@ -161,6 +161,7 @@
 .res-length { max-width:170px; }
 .hint { margin:0; font-size:.55rem; letter-spacing:.4px; color:#64748b; }
 .actions { display:flex; justify-content:flex-end; margin-top:.4rem; }
+.actions--lower { margin-top:1.7rem; }
 .btn-primary { font:inherit; font-size:.66rem; padding:.5rem .85rem .48rem; border-radius:10px; font-weight:600; letter-spacing:.5px; background:linear-gradient(180deg,#2563eb,#1d4ed8); color:#fff; border:1px solid #1d4ed8; cursor:pointer; box-shadow:0 4px 10px -4px rgba(37,99,235,.5); }
 .btn-primary:disabled { opacity:.55; cursor:not-allowed; }
 
@@ -180,7 +181,7 @@
 
 /* Sticky actions bar on small screens so submit button remains accessible */
 @media (max-width: 720px){
-	.actions--sticky { position:sticky; bottom:.15rem; background:linear-gradient(180deg,rgba(241,245,249,.65),rgba(241,245,249,.95)); backdrop-filter:blur(4px); padding:.55rem .35rem .6rem; margin-top:.65rem; border-radius:14px; box-shadow:0 4px 12px -6px rgba(0,0,0,.25); }
+	.actions--sticky { position:sticky; bottom:.15rem; padding:.55rem .35rem .6rem; margin-top:.65rem; border-radius:14px; box-shadow:0 4px 12px -6px rgba(0,0,0,.25); }
 	.actions--sticky .btn-primary { box-shadow:0 4px 14px -4px rgba(37,99,235,.55); }
 }
 @media (max-width:400px){

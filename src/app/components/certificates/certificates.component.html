@@ -115,9 +115,9 @@
 			</ng-container>
 		</div>
 		</div>
-		<div class="actions actions--sticky">
-			<button type="submit" class="btn-primary" [disabled]="!canSubmit() || submitting()">Submit</button>
-		</div>
+					<div class="actions actions--lower" *ngIf="form().type">
+						<button type="submit" class="btn-primary" [disabled]="!canSubmit() || submitting()">Submit</button>
+					</div>
 	</form>
 	<div class="recent" *ngIf="requests().length; else empty" aria-label="Recent certificate requests">
 		<h3 class="recent__title">Recent Requests</h3>

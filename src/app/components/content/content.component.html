@@ -46,7 +46,7 @@
   <div class="cards-grid">
     <div class="card metric">
       <h3><span class="metric__icon" aria-hidden="true">👥</span>Population</h3>
-      <p class="metric__value">42,318</p>
+      <p class="metric__value">15,912</p>
       <p class="metric__delta positive">+2.1% YoY</p>
     </div>
     <div class="card metric">
@@ -64,5 +64,43 @@
       <p class="metric__value">56</p>
       <p class="metric__delta">Updated hourly</p>
     </div>
+  </div>
+</section>
+
+<!-- Mission & Vision Section -->
+<section class="mv-section" aria-labelledby="mv-title">
+  <div class="mv-grid">
+    <div class="mv-block mv-block--mission" aria-label="Municipal mission statement">
+      <h3 id="mv-title" class="mv-heading">Mission</h3>
+      <p class="mv-text">{{ mission }}</p>
+    </div>
+    <div class="mv-block mv-block--vision" aria-label="Municipal vision statement">
+      <h3 class="mv-heading">Vision</h3>
+      <p class="mv-text">{{ vision }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- Core Values -->
+<section class="values-section" aria-labelledby="values-title">
+  <h3 id="values-title" class="section-subhead">Core Values</h3>
+  <div class="values-grid">
+    <article class="value" *ngFor="let v of coreValues; trackBy: trackByIndex" [attr.aria-label]="'Core value: ' + v.title">
+      <div class="value__icon" aria-hidden="true">{{ v.icon }}</div>
+      <h4 class="value__title">{{ v.title }}</h4>
+      <p class="value__desc">{{ v.desc }}</p>
+    </article>
+  </div>
+</section>
+
+<!-- Strategic Priorities -->
+<section class="priorities-section" aria-labelledby="priorities-title">
+  <h3 id="priorities-title" class="section-subhead">Strategic Priorities</h3>
+  <div class="priorities-grid">
+    <article class="priority" *ngFor="let p of strategicPriorities; trackBy: trackByIndex" [attr.aria-label]="'Priority: ' + p.title">
+      <div class="priority__icon" aria-hidden="true">{{ p.icon }}</div>
+      <h4 class="priority__title">{{ p.title }}</h4>
+      <p class="priority__detail">{{ p.detail }}</p>
+    </article>
   </div>
 </section>

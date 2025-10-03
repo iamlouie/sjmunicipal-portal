@@ -1,0 +1,140 @@
+<div class="section-head">
+	<h2 class="welcome-head animate-in" aria-label="Certificates heading">Municipal <em>Certificates</em></h2>
+</div>
+<div class="intro-bar animate-in-delayed">
+	<p class="intro-bar__text">Request and verification of civil, residency, and compliance certificates.</p>
+</div>
+<section class="certificates" aria-label="Certificate request form and recent submissions">
+	<form class="req-form" (ngSubmit)="submit()" #certForm="ngForm" novalidate>
+		<!-- Scroll wrapper: enables vertical scroll on smaller screens to prevent layout break -->
+		<div class="form-scroll">
+		<div class="form-grid" [ngClass]="{'has-type': form().type}">
+			<label class="field field--type">
+				<span class="field__label">Request Type *</span>
+				<select class="field__control" name="type" required [ngModel]="form().type" (ngModelChange)="updateField('type',$event)">
+					<option value="" disabled>Select...</option>
+					<option value="birth">Live Birth Certificate</option>
+					<option value="marriage">Marriage Certificate</option>
+					<option value="death">Death Certificate</option>
+					<option value="residency">Residency Certificate</option>
+				</select>
+			</label>
+
+			<!-- Birth Fields -->
+			<ng-container *ngIf="form().type === 'birth'">
+				<div class="name-row">
+					<label class="field"><span class="field__label">Child First Name *</span>
+						<input class="field__control" type="text" [ngModel]="form().birth.firstName" (ngModelChange)="updateNested('birth','firstName',$event)" name="birthFirst" required></label>
+					<label class="field"><span class="field__label">Middle Name</span>
+						<input class="field__control" type="text" [ngModel]="form().birth.middleName" (ngModelChange)="updateNested('birth','middleName',$event)" name="birthMiddle"></label>
+					<label class="field"><span class="field__label">Last Name *</span>
+						<input class="field__control" type="text" [ngModel]="form().birth.lastName" (ngModelChange)="updateNested('birth','lastName',$event)" name="birthLast" required></label>
+				</div>
+				<label class="field"><span class="field__label">Date of Birth *</span>
+					<input class="field__control" type="date" [ngModel]="form().birth.dateOfBirth" (ngModelChange)="updateNested('birth','dateOfBirth',$event)" name="birthDob" required></label>
+				<label class="field field--wide-birth-location"><span class="field__label">Place of Birth *</span>
+					<input class="field__control" type="text" [ngModel]="form().birth.placeOfBirth" (ngModelChange)="updateNested('birth','placeOfBirth',$event)" name="birthPlace" required></label>
+				<label class="field field--sex-narrow"><span class="field__label">Sex *</span>
+					<select class="field__control" [ngModel]="form().birth.sex" (ngModelChange)="updateNested('birth','sex',$event)" name="birthSex" required>
+						<option value="" disabled>Select...</option>
+						<option value="M">Male</option>
+						<option value="F">Female</option>
+					</select></label>
+				<div class="parents-row">
+					<label class="field"><span class="field__label">Father Full Name</span>
+						<input class="field__control" type="text" [ngModel]="form().birth.fatherFull" (ngModelChange)="updateNested('birth','fatherFull',$event)" name="birthFather"></label>
+					<label class="field"><span class="field__label">Mother Maiden Name</span>
+						<input class="field__control" type="text" [ngModel]="form().birth.motherMaiden" (ngModelChange)="updateNested('birth','motherMaiden',$event)" name="birthMother"></label>
+				</div>
+			</ng-container>
+
+			<!-- Marriage Fields -->
+			<ng-container *ngIf="form().type === 'marriage'">
+				<div class="marriage-names">
+					<label class="field marriage-husband"><span class="field__label">Husband Full Name *</span>
+						<input class="field__control" type="text" [ngModel]="form().marriage.husbandName" (ngModelChange)="updateNested('marriage','husbandName',$event)" name="marHusband" required></label>
+					<label class="field marriage-wife"><span class="field__label">Wife Maiden Name *</span>
+						<input class="field__control" type="text" [ngModel]="form().marriage.wifeMaidenName" (ngModelChange)="updateNested('marriage','wifeMaidenName',$event)" name="marWife" required></label>
+				</div>
+				<div class="marriage-extra">
+					<label class="field marriage-date"><span class="field__label">Date of Marriage *</span>
+						<input class="field__control" type="date" [ngModel]="form().marriage.dateOfMarriage" (ngModelChange)="updateNested('marriage','dateOfMarriage',$event)" name="marDate" required></label>
+					<label class="field marriage-place"><span class="field__label">Place of Marriage *</span>
+						<input class="field__control" type="text" [ngModel]="form().marriage.placeOfMarriage" (ngModelChange)="updateNested('marriage','placeOfMarriage',$event)" name="marPlace" required></label>
+				</div>
+			</ng-container>
+
+			<!-- Death Fields -->
+			<ng-container *ngIf="form().type === 'death'">
+				<div class="death-top">
+					<label class="field death-name"><span class="field__label">Full Name of Deceased *</span>
+						<input class="field__control" type="text" [ngModel]="form().death.fullName" (ngModelChange)="updateNested('death','fullName',$event)" name="deathName" required></label>
+					<label class="field death-date"><span class="field__label">Date of Death *</span>
+						<input class="field__control" type="date" [ngModel]="form().death.dateOfDeath" (ngModelChange)="updateNested('death','dateOfDeath',$event)" name="deathDate" required></label>
+				</div>
+				<label class="field death-place-full"><span class="field__label">Place of Death *</span>
+					<input class="field__control" type="text" [ngModel]="form().death.placeOfDeath" (ngModelChange)="updateNested('death','placeOfDeath',$event)" name="deathPlace" required></label>
+				<label class="field death-dob-single"><span class="field__label">Date of Birth</span>
+					<input class="field__control" type="date" [ngModel]="form().death.dateOfBirth" (ngModelChange)="updateNested('death','dateOfBirth',$event)" name="deathDob"></label>
+				<label class="field"><span class="field__label">Parents</span>
+					<input class="field__control" type="text" [ngModel]="form().death.parents" (ngModelChange)="updateNested('death','parents',$event)" name="deathParents"></label>
+			</ng-container>
+
+			<!-- Residency Fields -->
+			<ng-container *ngIf="form().type === 'residency'">
+				<div class="residency-top">
+					<label class="field"><span class="field__label">Full Name *</span>
+						<input class="field__control" type="text" [ngModel]="form().residency.fullName" (ngModelChange)="updateNested('residency','fullName',$event)" name="resName" required></label>
+					<label class="field"><span class="field__label">Address *</span>
+						<input class="field__control" type="text" [ngModel]="form().residency.address" (ngModelChange)="updateNested('residency','address',$event)" name="resAddress" required></label>
+				</div>
+				<label class="field res-length"><span class="field__label">Length of Residency *</span>
+					<input class="field__control" type="text" [ngModel]="form().residency.lengthOfResidency" (ngModelChange)="updateNested('residency','lengthOfResidency',$event)" name="resLength" placeholder="e.g. 5 years" required></label>
+				<label class="field"><span class="field__label">Date of Birth *</span>
+					<input class="field__control" type="date" [ngModel]="form().residency.dateOfBirth" (ngModelChange)="updateNested('residency','dateOfBirth',$event)" name="resDob" required></label>
+				<label class="field"><span class="field__label">Civil Status *</span>
+					<input class="field__control" type="text" [ngModel]="form().residency.civilStatus" (ngModelChange)="updateNested('residency','civilStatus',$event)" name="resStatus" required></label>
+				<label class="field"><span class="field__label">Citizenship *</span>
+					<input class="field__control" type="text" [ngModel]="form().residency.citizenship" (ngModelChange)="updateNested('residency','citizenship',$event)" name="resCitizen" required></label>
+			</ng-container>
+
+			<!-- Requestor Info (always shown once type picked) -->
+			<ng-container *ngIf="form().type">
+				<label class="field field--full"><span class="field__label">Purpose of Request</span>
+					<textarea class="field__control" rows="3" name="purpose" [ngModel]="form().purpose" (ngModelChange)="updateField('purpose',$event)"></textarea></label>
+				<div class="requestor-row">
+					<label class="field"><span class="field__label">Requestor Name *</span>
+						<input class="field__control" type="text" [ngModel]="form().requestor.name" (ngModelChange)="updateRequestor('name',$event)" name="reqName" required></label>
+					<label class="field"><span class="field__label">Requestor Contact *</span>
+						<input class="field__control" type="tel" [ngModel]="form().requestor.contact" (ngModelChange)="updateRequestor('contact',$event)" name="reqContact" required></label>
+					<label class="field"><span class="field__label">Relationship to Subject</span>
+						<input class="field__control" type="text" [ngModel]="form().requestor.relationship" (ngModelChange)="updateRequestor('relationship',$event)" name="reqRel"></label>
+				</div>
+				<label class="field"><span class="field__label">Valid ID (placeholder)</span>
+					<input class="field__control" type="text" [ngModel]="form().requestor.validId" (ngModelChange)="updateRequestor('validId',$event)" name="reqId" placeholder="e.g., Driver's License #"></label>
+			</ng-container>
+		</div>
+		</div>
+		<div class="actions actions--sticky">
+			<button type="submit" class="btn-primary" [disabled]="!canSubmit() || submitting()">Submit</button>
+		</div>
+	</form>
+	<div class="recent" *ngIf="requests().length; else empty" aria-label="Recent certificate requests">
+		<h3 class="recent__title">Recent Requests</h3>
+		<ul class="recent__list" role="list">
+			<li class="recent__item" *ngFor="let r of requests(); trackBy: trackByReq">
+				<div class="recent__ref">{{ r.id }}</div>
+				<div class="recent__body">
+					<p class="recent__kind">{{ labelFor(r.type) }}</p>
+					<p class="recent__name">{{ displaySubject(r) }}</p>
+					<p class="recent__requestor">Requestor: {{ r.requestor.name }}<span *ngIf="r.requestor.relationship"> ({{ r.requestor.relationship }})</span></p>
+					<p class="recent__time">{{ r.createdAt | date:'short' }}</p>
+					<p class="recent__purpose" *ngIf="r.purpose">Purpose: {{ r.purpose }}</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<ng-template #empty>
+		<p class="empty-note">No submissions yet.</p>
+	</ng-template>
+</section>

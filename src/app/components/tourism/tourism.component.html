@@ -1,0 +1,40 @@
+<div class="section-head">
+  <h1 class="welcome-head animate-in" id="tourism-heading">Tourism & <em>Attractions</em></h1>
+</div>
+<div class="intro-bar tourism__intro animate-in-delayed" id="tourism-intro">
+  <p class="intro-bar__text">Experience culture, nature, and local heritage — explore destinations that make our municipality unique.</p>
+</div>
+
+<section class="panel" aria-labelledby="tourism-heading" aria-describedby="tourism-intro">
+  <div class="tourism-blog" *ngIf="posts.length; else noPosts">
+  <article class="t-post" *ngFor="let p of posts; trackBy: trackByPost">
+      <div class="t-post__media-wrap">
+        <img class="t-post__cover" [src]="p.cover" [alt]="p.title" loading="lazy" />
+        <span class="t-post__tag-badge" *ngIf="p.tags?.length">{{ p.tags[0] }}</span>
+      </div>
+      <div class="t-post__body">
+        <header class="t-post__header">
+          <h2 class="t-post__title">{{ p.title }}</h2>
+          <div class="t-post__meta">
+            <time class="t-post__date" [attr.datetime]="p.published">{{ p.published | date:'MMM d, y' }}</time>
+            <span class="t-post__dot" aria-hidden="true">•</span>
+            <span class="t-post__loc">{{ p.location }}</span>
+          </div>
+          <p class="t-post__excerpt" *ngIf="!p.expanded">{{ p.excerpt }}</p>
+        </header>
+        <div class="t-post__full" *ngIf="p.expanded">
+          <p class="t-post__paragraph">{{ p.body }}</p>
+        </div>
+  <div class="t-post__tags" *ngIf="(p.tags?.length || 0) > 1">
+          <span class="t-tag" *ngFor="let t of (p.tags || [])">#{{ t }}</span>
+        </div>
+        <button type="button" class="t-post__toggle" (click)="toggle(p)" [attr.aria-expanded]="p.expanded">
+          {{ p.expanded ? 'Show Less' : 'Read More' }}
+        </button>
+      </div>
+    </article>
+  </div>
+  <ng-template #noPosts>
+    <p class="placeholder">Tourism posts coming soon.</p>
+  </ng-template>
+</section>

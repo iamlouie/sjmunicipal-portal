@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NgIf, NgFor } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
+import { ToastService } from '../../toast.service';
 
 @Component({
   selector: 'app-inquiries',
@@ -10,15 +11,20 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./inquiries.component.css']
 })
 export class InquiriesComponent {
-  inquiries = [
-    { id: 1, subject: 'Business permit processing', status: 'Open', submitted: '2025-09-30', barangay: 'Poblacion', details: 'Clarification on documentary requirements.' },
-    { id: 2, subject: 'Road repair follow-up', status: 'Pending', submitted: '2025-09-28', barangay: 'Zone 2', details: 'Pothole still unrepaired near corner.' },
-    { id: 3, subject: 'Health center medicine availability', status: 'Resolved', submitted: '2025-09-25', barangay: 'San Roque', details: 'Asking for stock levels of maintenance meds.' }
-  ];
+  // Inquiry model (kept local for now; can be moved to a shared models folder later)
+  inquiries: Array<{
+    id: number;
+    name?: string;
+    contact?: string;
+    subject: string;
+    status: string;
+    submitted: string; // ISO date string
+    barangay: string;
+    details: string;
+  }> = [];
 
   submitting = false;
   formTouched = false;
-  successMessage: string | null = null;
 
   model = {
     name: '',
@@ -37,13 +43,15 @@ export class InquiriesComponent {
   get isValid() {
     const nameOk = this.model.name.trim().length >= 2;
     const contactOk = this.model.contact.trim().length >= 7; // basic length check
-    const subjOk = this.model.subject.trim().length >= 4;
+    const subjOk = this.model.subject.trim().length > 0; // now only required, no min length
     const brgyOk = !!this.model.barangay;
-    const detailsOk = this.model.details.trim().length >= 10;
+    const detailsOk = this.model.details.trim().length > 0; // only required, no min length
     return nameOk && contactOk && subjOk && brgyOk && detailsOk;
   }
 
-  submit() {
+  constructor(private toast: ToastService) {}
+
+  submit(form?: NgForm) {
     this.formTouched = true;
     if (!this.isValid || this.submitting) return;
     this.submitting = true;
@@ -62,9 +70,13 @@ export class InquiriesComponent {
     setTimeout(() => {
       this.inquiries.unshift(newInquiry);
       this.submitting = false;
-      this.successMessage = 'Inquiry submitted successfully.';
+      this.toast.success('Inquiry submitted');
+      // Reset model & clear manual touched flag
       this.resetForm();
-      setTimeout(()=> this.successMessage = null, 4000);
+      // Also reset Angular form state (touched/dirty) if provided
+      if (form) {
+        form.resetForm({ name: '', contact: '', subject: '', barangay: '', details: '' });
+      }
     }, 400);
   }
 

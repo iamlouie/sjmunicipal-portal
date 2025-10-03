@@ -264,3 +264,41 @@
 
 @media (max-width:600px){ .metric { padding:.75rem .8rem .85rem; } }
 
+
+/* Mission & Vision Section */
+.mv-section { margin: 0 0 3.2rem; }
+.mv-grid { display:grid; gap:1.25rem; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); align-items:stretch; }
+.mv-block { position:relative; padding:1.25rem 1.35rem 1.35rem; border:1px solid #dbe3ed; border-radius:18px; background:linear-gradient(135deg,#ffffff,#f1f5f9 85%); box-shadow:0 4px 16px -8px rgba(0,0,0,.12), 0 2px 6px -4px rgba(0,0,0,.08); overflow:hidden; }
+.mv-block::before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 20% 25%,rgba(37,99,235,.10),transparent 60%), radial-gradient(circle at 80% 75%,rgba(124,58,237,.10),transparent 55%); opacity:.9; pointer-events:none; }
+.mv-heading { margin:0 0 .6rem; font-size:1rem; letter-spacing:.8px; text-transform:uppercase; font-weight:700; background:linear-gradient(90deg,#1e3a8a,#2563eb 50%,#7c3aed); -webkit-background-clip:text; color:transparent; background-clip:text; }
+.mv-text { margin:0; font-size:.82rem; line-height:1.55; letter-spacing:.3px; color:#334155; }
+@media (max-width:760px){
+	.mv-grid { grid-template-columns: 1fr; }
+	.mv-block { padding:1rem 1.05rem 1.1rem; }
+}
+@media (max-width:640px){ .mv-text { font-size:.78rem; } }
+
+/* Core Values */
+.values-section { margin:0 0 3.2rem; }
+.section-subhead { margin:0 0 1rem; font-size:1.05rem; font-weight:700; letter-spacing:.9px; text-transform:uppercase; color:#1e2766; position:relative; padding-left:.85rem; }
+.section-subhead::before { content:""; position:absolute; left:0; top:8%; width:4px; height:84%; border-radius:3px; background:linear-gradient(180deg,#2563eb,#4f46e5 60%,#7c3aed); box-shadow:0 2px 8px -3px rgba(0,0,0,.25); }
+.values-grid { display:grid; gap:1rem; grid-template-columns:repeat(auto-fit, minmax(170px,1fr)); }
+.value { position:relative; padding:.95rem .9rem 1rem; border:1px solid #e2e8f0; background:linear-gradient(145deg,#fff,#f8fafc); border-radius:14px; box-shadow:0 4px 12px -6px rgba(0,0,0,.15); transition:transform .45s cubic-bezier(.16,.72,.29,1), box-shadow .45s, border-color .45s; }
+.value:hover { transform:translateY(-6px); box-shadow:0 12px 30px -14px rgba(0,0,0,.28), 0 6px 16px -8px rgba(0,0,0,.18); border-color:#cbd5e1; }
+.value__icon { width:38px; height:38px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; border-radius:10px; background:linear-gradient(135deg,#2563eb,#7c3aed); color:#fff; box-shadow:0 2px 6px -2px rgba(0,0,0,.4), 0 4px 14px -6px rgba(59,130,246,.55); margin:0 0 .65rem; position:relative; }
+.value__icon::after { content:""; position:absolute; inset:0; border-radius:inherit; background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.65),rgba(255,255,255,0) 70%); mix-blend-mode:screen; }
+.value__title { margin:0 0 .35rem; font-size:.78rem; letter-spacing:.6px; text-transform:uppercase; font-weight:600; color:#475569; }
+.value__desc { margin:0; font-size:.72rem; line-height:1.4; letter-spacing:.4px; color:#334155; }
+@media (max-width:640px){ .value__desc { font-size:.7rem; } }
+
+/* Strategic Priorities */
+.priorities-section { margin:0 0 3.2rem; }
+.priorities-grid { display:grid; gap:1rem; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+.priority { position:relative; padding:1rem .95rem 1.05rem; border:1px solid #e2e8f0; border-radius:16px; background:linear-gradient(145deg,#ffffff,#f1f5f9); box-shadow:0 4px 14px -8px rgba(0,0,0,.18); transition:transform .45s cubic-bezier(.16,.72,.29,1), box-shadow .45s, border-color .45s; }
+.priority:hover { transform:translateY(-6px); box-shadow:0 14px 32px -14px rgba(0,0,0,.3), 0 6px 18px -10px rgba(0,0,0,.2); border-color:#cbd5e1; }
+.priority__icon { width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; border-radius:12px; background:linear-gradient(135deg,#2563eb,#7c3aed); color:#fff; box-shadow:0 2px 7px -2px rgba(0,0,0,.5), 0 5px 16px -8px rgba(59,130,246,.55); margin:0 0 .75rem; position:relative; }
+.priority__icon::after { content:""; position:absolute; inset:0; border-radius:inherit; background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.65),rgba(255,255,255,0) 70%); mix-blend-mode:screen; }
+.priority__title { margin:0 0 .45rem; font-size:.8rem; letter-spacing:.6px; text-transform:uppercase; font-weight:600; color:#475569; }
+.priority__detail { margin:0; font-size:.73rem; line-height:1.45; letter-spacing:.35px; color:#334155; }
+@media (max-width:640px){ .priority__detail { font-size:.7rem; } }
+

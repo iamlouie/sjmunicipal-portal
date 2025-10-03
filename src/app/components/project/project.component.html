@@ -5,7 +5,22 @@
 	<p class="intro-bar__text">Plan, track, and monitor infrastructure and community development initiatives across the municipality.</p>
 </div>
 <section class="projects" aria-labelledby="projects-heading" aria-describedby="projects-intro">
-	<div *ngIf="loading()" class="placeholder" aria-live="polite">Loading projects...</div>
+	<div *ngIf="loading()" aria-live="polite">
+		<div class="skeleton-table" aria-hidden="true">
+			<div class="skeleton-row" *ngFor="let r of [1,2,3,4,5,6]">
+				<div class="skeleton-cell"></div>
+				<div class="skeleton-cell wide"></div>
+				<div class="skeleton-cell"></div>
+				<div class="skeleton-cell"></div>
+				<div class="skeleton-cell"></div>
+				<div class="skeleton-cell"></div>
+				<div class="skeleton-cell"></div>
+				<div class="skeleton-cell"></div>
+				<div class="skeleton-cell"></div>
+			</div>
+		</div>
+		<p class="visually-hidden">Loading projects...</p>
+	</div>
 	<div *ngIf="!loading() && error()" class="placeholder error" role="alert">Failed to load projects: {{ error() }}</div>
 	<div class="table-wrap" role="region" aria-label="Projects table container" *ngIf="!loading() && !error() && projects().length; else noProjects">
 		<table class="res-table" aria-describedby="projects-intro">

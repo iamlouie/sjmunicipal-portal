@@ -5,7 +5,19 @@
 	<p class="intro-bar__text">Track public buildings, venues, maintenance schedules, and utilization insights.</p>
 </div>
 <section class="facilities" aria-labelledby="facilities-heading" aria-describedby="facilities-intro">
-	<div class="facilities__list" role="list">
+	<div *ngIf="loading" aria-live="polite">
+		<div class="skeleton-card-grid" aria-hidden="true">
+			<div class="skeleton-card" *ngFor="let i of [1,2,3,4]">
+				<div class="skeleton skeleton--title" style="width:72%"></div>
+				<div class="skeleton skeleton--text sm" style="width:60%"></div>
+				<div class="skeleton skeleton--text sm" style="width:50%"></div>
+				<div class="skeleton skeleton--pill" style="width:35%; margin-top:auto"></div>
+			</div>
+		</div>
+		<p class="visually-hidden">Loading facilities...</p>
+	</div>
+	<div *ngIf="!loading && error" class="placeholder error" role="alert">{{ error }}</div>
+	<div class="facilities__list" role="list" *ngIf="!loading && !error">
 		<!-- Add Facility Card (admin only) -->
 		<article class="facility-card facility-card--add" role="listitem" *ngIf="isAdmin">
 			<button type="button" class="add-card-btn" (click)="openCreateModal()" aria-label="Add new facility">

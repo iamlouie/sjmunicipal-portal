@@ -185,3 +185,31 @@ input.ng-invalid.ng-touched, select.ng-invalid.ng-touched, textarea.ng-invalid.n
 	.modal__section-title { margin:-1.15rem -1.15rem .9rem; }
 }
 
+/* ==================================================
+   LAZY LOADING SKELETONS / SHIMMER PLACEHOLDERS
+   ================================================== */
+.skeleton-wrap { display:grid; gap:.85rem; }
+.skeleton { position:relative; overflow:hidden; background:linear-gradient(90deg,#e2e8f0 0%,#f1f5f9 20%,#e2e8f0 40%); background-size:200% 100%; animation:skeleton-shimmer 1.4s linear infinite; border-radius:8px; }
+.skeleton--pill { border-radius:30px; height:.85rem; }
+.skeleton--text { height:.85rem; }
+.skeleton--text.sm { height:.65rem; }
+.skeleton--title { height:1.15rem; margin-bottom:.3rem; }
+.skeleton--block { height:3.2rem; }
+.skeleton--card { height:130px; }
+.skeleton-table { border:1px solid var(--color-border); border-radius:10px; overflow:hidden; }
+.skeleton-row { display:grid; grid-template-columns:40px 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; gap:.75rem; padding:.6rem .9rem; border-bottom:1px solid #e2e8f0; }
+.skeleton-row:last-child { border-bottom:none; }
+.skeleton-cell { height:.7rem; border-radius:5px; background:linear-gradient(90deg,#e2e8f0 0%,#f1f5f9 55%,#e2e8f0 100%); background-size:200% 100%; animation:skeleton-shimmer 1.2s linear infinite; }
+.skeleton-cell.wide { grid-column:span 2; }
+.skeleton-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1rem; }
+.skeleton-card { border:1px solid var(--color-border); border-radius:14px; padding:1rem; background:#fff; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:.55rem; }
+.skeleton-card .skeleton { background:linear-gradient(90deg,#e2e8f0 0%,#f8fafc 55%,#e2e8f0 100%); }
+.skeleton-res-table { border:1px solid var(--color-border); border-radius:10px; overflow:hidden; margin-bottom:1rem; }
+.skeleton-row--res { display:grid; grid-template-columns:40px 1.2fr 1fr 1.2fr 60px 80px 1.4fr 1fr 1fr 80px 70px; gap:.65rem; padding:.55rem .85rem; border-bottom:1px solid #e2e8f0; }
+.skeleton-row--res:last-child { border-bottom:none; }
+.skeleton-row--res .skeleton-cell { height:.65rem; border-radius:5px; background:linear-gradient(90deg,#e2e8f0 0%,#f1f5f9 55%,#e2e8f0 100%); background-size:200% 100%; animation:skeleton-shimmer 1.2s linear infinite; }
+.placeholder.error { background:#fee2e2; border-color:#fca5a5; color:#991b1b; }
+
+@keyframes skeleton-shimmer { 0% { background-position:200% 0; } 100% { background-position:-200% 0; } }
+
+

@@ -6,7 +6,20 @@
 </div>
 
 <section class="announcement" aria-labelledby="announcement-heading" aria-describedby="announcement-intro">
-	<div class="announcement__list" role="list">
+	<div *ngIf="loading" aria-live="polite">
+		<div class="skeleton-card-grid" aria-hidden="true">
+			<div class="skeleton-card" *ngFor="let i of [1,2,3,4]">
+				<div class="skeleton skeleton--title" style="width:70%"></div>
+				<div class="skeleton skeleton--text" style="width:55%"></div>
+				<div class="skeleton skeleton--text sm" style="width:90%"></div>
+				<div class="skeleton skeleton--text sm" style="width:82%"></div>
+				<div class="skeleton skeleton--pill" style="width:40%; margin-top:auto"></div>
+			</div>
+		</div>
+		<p class="visually-hidden">Loading announcements...</p>
+	</div>
+	<div *ngIf="!loading && error" class="placeholder error" role="alert">{{ error }}</div>
+	<div class="announcement__list" role="list" *ngIf="!loading && !error">
 		<!-- Add Announcement Card (admin only) -->
 		<article class="announcement-card announcement-card--add" role="listitem" *ngIf="isAdmin">
 			<button type="button" class="add-card-btn" (click)="openCreateModal()" [disabled]="loading || creating" aria-label="Add new announcement">

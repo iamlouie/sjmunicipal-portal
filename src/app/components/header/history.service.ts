@@ -63,8 +63,6 @@ export class HistoryService {
   }
 
   // Placeholder for future server synchronization
-  async syncFromServer(): Promise<void> {
-    // TODO: Replace with real HTTP call to fetch audit log.
-    // Merge logic example: ensure no duplicates by comparing message+when.
-  }
+  // Placeholder for future server synchronization (kept intentionally to show planned extension point)
+  async syncFromServer(): Promise<void> { /* no-op */ }
 }

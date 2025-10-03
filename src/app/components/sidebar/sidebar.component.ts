@@ -20,8 +20,8 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
         { label: 'Dashboard', icon: '📊', path: '/dashboard' },
         { label: 'Organization Chart', icon: '🗂️', path: '/organization-chart' },
         { label: 'Announcements', icon: '📰', path: '/announcements' },
-        { label: 'Events', icon: '📅', path: '/events' }
-        
+        { label: 'Events', icon: '📅', path: '/events' },
+        { label: 'Tourism', icon: '✈️', path: '/tourism' } // updated icon
       ]
     },
     {
@@ -34,7 +34,9 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
      {
       label: 'Services',
       items: [
-    { label: 'Inquiry', icon: '📨', path: '/inquiries' }
+    { label: 'Inquiry', icon: '📨', path: '/inquiries' },
+    { label: 'Certificates', icon: '🧾', path: '/certificates' },
+    { label: 'Permits', icon: '📝', path: '/permits' }
       ]
     },
     {

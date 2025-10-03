@@ -5,7 +5,20 @@
 	<p class="intro-bar__text">Discover upcoming activities, programs, and community gatherings.</p>
 </div>
 <section class="event" aria-labelledby="event-heading" aria-describedby="event-intro">
-	<div class="event__list" role="list">
+	<div *ngIf="loading" aria-live="polite">
+		<div class="skeleton-card-grid" aria-hidden="true">
+			<div class="skeleton-card" *ngFor="let i of [1,2,3,4]">
+				<div class="skeleton skeleton--title" style="width:75%"></div>
+				<div class="skeleton skeleton--text" style="width:50%"></div>
+				<div class="skeleton skeleton--text sm" style="width:88%"></div>
+				<div class="skeleton skeleton--text sm" style="width:80%"></div>
+				<div class="skeleton skeleton--pill" style="width:45%; margin-top:auto"></div>
+			</div>
+		</div>
+		<p class="visually-hidden">Loading events...</p>
+	</div>
+	<div *ngIf="!loading && error" class="placeholder error" role="alert">{{ error }}</div>
+	<div class="event__list" role="list" *ngIf="!loading && !error">
 		<!-- Add Event Card (admin only) -->
 		<article class="event-card event-card--add" role="listitem" *ngIf="isAdmin">
 			<button type="button" class="add-card-btn" (click)="openCreateModal()" [disabled]="loading || creating" aria-label="Add new event">

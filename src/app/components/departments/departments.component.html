@@ -1,0 +1,29 @@
+<div class="section-head">
+	<h2 class="welcome-head animate-in" aria-label="Departments overview heading">Municipal Departments & Offices</h2>
+</div>
+<div class="intro-bar animate-in-delayed">
+	<p class="welcome-tag">Explore the core offices delivering essential public services, governance, and community support.</p>
+</div>
+<section class="dept-wrapper" aria-label="Departments listing">
+	<ng-container *ngFor="let cat of categories; trackBy: trackByCategory">
+		<div class="dept-category">
+			<div class="dept-category__head">
+				<h3 class="dept-category__title"><span class="dept-category__icon" aria-hidden="true">{{ cat.icon }}</span>{{ cat.name }}</h3>
+				<p class="dept-category__blurb">{{ cat.blurb }}</p>
+			</div>
+			<div class="dept-grid">
+				<article class="dept-card" *ngFor="let u of cat.units; trackBy: trackByUnit" [attr.aria-label]="u.name">
+					<header class="dept-card__head">
+						<h4 class="dept-card__name">{{ u.name }}</h4>
+					</header>
+						<p class="dept-card__desc">{{ u.description }}</p>
+							<ul class="dept-meta" aria-label="Contact information">
+								<li><strong>Contact:</strong> <a [href]="'tel:' + sanitizeContact(u.contact)" class="dept-link">{{ u.contact }}</a></li>
+							<li *ngIf="u.email"><strong>Email:</strong> <a class="dept-link" [href]="'mailto:' + u.email">{{ u.email }}</a></li>
+							<li *ngIf="u.office"><strong>Office:</strong> {{ u.office }}</li>
+						</ul>
+				</article>
+			</div>
+		</div>
+	</ng-container>
+</section>

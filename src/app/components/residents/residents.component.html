@@ -5,7 +5,24 @@
   <p class="intro-bar__text">Manage citizen records, household profiles, and demographic insights for effective community services.</p>
 </div>
 <section class="residents" aria-labelledby="residents-heading" aria-describedby="residents-intro">
-  <div *ngIf="loading" class="placeholder">Loading residents…</div>
+  <div *ngIf="loading" aria-live="polite">
+    <div class="skeleton-res-table" aria-hidden="true">
+      <div class="skeleton-row--res" *ngFor="let r of [1,2,3,4,5,6,7,8]">
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+      </div>
+    </div>
+    <p class="visually-hidden">Loading residents...</p>
+  </div>
   <div *ngIf="error && !loading" class="placeholder" role="alert">{{ error }}</div>
   <div *ngIf="!loading && !error">
     <div class="notice-reopen-wrap" *ngIf="!showNotice">

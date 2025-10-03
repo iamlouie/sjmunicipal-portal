@@ -1,0 +1,109 @@
+<div class="section-head">
+	<h2 class="welcome-head animate-in" aria-label="Permits heading">Municipal <em>Permits</em></h2>
+</div>
+<div class="intro-bar animate-in-delayed">
+	<p class="intro-bar__text">Guidelines, processing, and status for business, construction, and activity permits.</p>
+</div>
+<section class="permits" aria-label="Permit request form and recent submissions">
+	<form class="req-form" (ngSubmit)="submit(permForm)" #permForm="ngForm" novalidate>
+		<div class="form-grid">
+			<label class="field field--type">
+				<span class="field__label">Request Type *</span>
+			<select class="field__control" name="type" required [ngModel]="form().type" (ngModelChange)="updateField('type',$event)">
+					<option value="" disabled>Select...</option>
+					<option value="business-application">Business Permit Application</option>
+					<option value="business-renewal">Business Permit Renewal</option>
+					<option value="building-application">Building Permit Application</option>
+				</select>
+			</label>
+
+			<!-- Business Permit Application Fields -->
+			<ng-container *ngIf="form().type === 'business-application'">
+				<label class="field field--full">
+					<span class="field__label">Business Name *</span>
+					<input class="field__control" required [ngModel]="form().businessApplication.businessName" (ngModelChange)="updateNested('businessApplication','businessName',$event)" name="bizNameApp">
+				</label>
+				<label class="field">
+					<span class="field__label">Owner Name *</span>
+					<input class="field__control" required [ngModel]="form().businessApplication.ownerName" (ngModelChange)="updateNested('businessApplication','ownerName',$event)" name="ownerNameApp">
+				</label>
+				<label class="field field--full">
+					<span class="field__label">Business Address *</span>
+					<input class="field__control" required [ngModel]="form().businessApplication.address" (ngModelChange)="updateNested('businessApplication','address',$event)" name="addressApp">
+				</label>
+				<label class="field">
+					<span class="field__label">Nature of Business *</span>
+					<input class="field__control" required [ngModel]="form().businessApplication.nature" (ngModelChange)="updateNested('businessApplication','nature',$event)" name="natureApp">
+				</label>
+				<label class="field">
+					<span class="field__label">Capital Investment *</span>
+					<input class="field__control" required [ngModel]="form().businessApplication.capital" (ngModelChange)="updateNested('businessApplication','capital',$event)" name="capitalApp">
+				</label>
+			</ng-container>
+
+			<!-- Business Permit Renewal Fields -->
+			<ng-container *ngIf="form().type === 'business-renewal'">
+				<label class="field field--full">
+					<span class="field__label">Registered Business Name *</span>
+					<input class="field__control" required [ngModel]="form().businessRenewal.businessName" (ngModelChange)="updateNested('businessRenewal','businessName',$event)" name="bizNameRenew">
+				</label>
+				<label class="field">
+					<span class="field__label">Previous Permit No. *</span>
+					<input class="field__control" required [ngModel]="form().businessRenewal.previousPermitNo" (ngModelChange)="updateNested('businessRenewal','previousPermitNo',$event)" name="prevPermit">
+				</label>
+				<label class="field">
+					<span class="field__label">Gross Sales (Last Year) *</span>
+					<input class="field__control" required [ngModel]="form().businessRenewal.grossSales" (ngModelChange)="updateNested('businessRenewal','grossSales',$event)" name="grossSales">
+				</label>
+				<label class="field field--full">
+					<span class="field__label">Owner Contact *</span>
+					<input class="field__control" required [ngModel]="form().businessRenewal.ownerContact" (ngModelChange)="updateNested('businessRenewal','ownerContact',$event)" name="ownerContactRenew">
+				</label>
+			</ng-container>
+
+			<!-- Building Permit Application Fields -->
+			<ng-container *ngIf="form().type === 'building-application'">
+				<label class="field field--full">
+					<span class="field__label">Project Title *</span>
+					<input class="field__control" required [ngModel]="form().buildingApplication.projectTitle" (ngModelChange)="updateNested('buildingApplication','projectTitle',$event)" name="projectTitle">
+				</label>
+				<label class="field field--full">
+					<span class="field__label">Project Location *</span>
+					<input class="field__control" required [ngModel]="form().buildingApplication.location" (ngModelChange)="updateNested('buildingApplication','location',$event)" name="locationBldg">
+				</label>
+				<label class="field">
+					<span class="field__label">Estimated Cost *</span>
+					<input class="field__control" required [ngModel]="form().buildingApplication.estimatedCost" (ngModelChange)="updateNested('buildingApplication','estimatedCost',$event)" name="costBldg">
+				</label>
+				<label class="field">
+					<span class="field__label">Contractor *</span>
+					<input class="field__control" required [ngModel]="form().buildingApplication.contractor" (ngModelChange)="updateNested('buildingApplication','contractor',$event)" name="contractorBldg">
+				</label>
+				<label class="field">
+					<span class="field__label">Owner Name *</span>
+					<input class="field__control" required [ngModel]="form().buildingApplication.ownerName" (ngModelChange)="updateNested('buildingApplication','ownerName',$event)" name="ownerNameBldg">
+				</label>
+			</ng-container>
+		</div>
+		<div class="actions actions--lower">
+			<button type="submit" class="btn-primary" [disabled]="!canSubmit() || submitting()">Submit</button>
+		</div>
+
+	</form>
+	<div class="recent" *ngIf="requests().length; else empty" aria-label="Recent permit requests">
+		<h3 class="recent__title">Recent Requests</h3>
+		<ul class="recent__list" role="list">
+			<li class="recent__item" *ngFor="let r of requests(); trackBy: trackByReq">
+				<div class="recent__ref">{{ r.id }}</div>
+				<div class="recent__body">
+					<p class="recent__kind">{{ labelFor(r.type) }}</p>
+					<p class="recent__name" *ngIf="primaryName(r) as name">{{ name }}</p>
+					<p class="recent__time">{{ r.createdAt | date:'short' }}</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<ng-template #empty>
+		<p class="empty-note">No submissions yet.</p>
+	</ng-template>
+</section>

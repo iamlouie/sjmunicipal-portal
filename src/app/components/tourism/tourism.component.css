@@ -1,0 +1,48 @@
+
+
+/* Intro bar styles (mirrors events/announcements/projects) */
+.intro-bar { display:flex; align-items:flex-start; gap:1.25rem; width:100%; }
+.intro-bar__text { margin:0; flex:1 1 auto; }
+@media (max-width:860px){
+	.intro-bar { flex-direction:column; }
+}
+
+/* Tourism intro specific (vertical gradient bar) */
+.tourism__intro { margin:0 0 1.15rem; font-size:clamp(.8rem,.45vw + .7rem,1rem); line-height:1.5; color:#475569; letter-spacing:.38px; max-width:840px; padding-left:1rem; position:relative; }
+.tourism__intro::before { content:""; position:absolute; left:0; top:.55rem; width:5px; height:calc(100% - .9rem); background:linear-gradient(180deg,#2563eb,#4f46e5 65%,#7c3aed); border-radius:3px; opacity:.15; }
+@media (max-width:640px){ .tourism__intro { font-size:.78rem; line-height:1.42; } }
+
+/* Tourism blog layout */
+.tourism-blog { display:grid; gap:1.4rem; }
+.t-post { display:grid; grid-template-columns: minmax(240px,340px) 1fr; gap:1.4rem; background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:1rem 1.1rem 1.15rem; box-shadow:0 2px 6px -2px rgba(0,0,0,.06); position:relative; overflow:hidden; }
+.t-post__media-wrap { position:relative; border-radius:10px; overflow:hidden; aspect-ratio:16 / 9; background:#f1f5f9; display:flex; align-items:center; justify-content:center; }
+.t-post__cover { width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s ease, filter .6s ease; }
+.t-post__media-wrap::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.35)); opacity:0; transition:opacity .4s ease; }
+.t-post:hover .t-post__cover { transform:scale(1.05); filter:brightness(.95); }
+.t-post:hover .t-post__media-wrap::after { opacity:1; }
+.t-post__tag-badge { position:absolute; top:.55rem; left:.55rem; background:linear-gradient(90deg,#2563eb,#4f46e5); color:#fff; font-size:.55rem; padding:.32rem .5rem .38rem; font-weight:600; letter-spacing:.8px; border-radius:999px; text-transform:uppercase; box-shadow:0 2px 6px -2px rgba(0,0,0,.35); }
+.t-post__body { display:flex; flex-direction:column; min-width:0; }
+.t-post__header { margin:0 0 .35rem; }
+.t-post__title { margin:0 0 .4rem; font-size:1.15rem; line-height:1.2; font-weight:650; color:#1e293b; letter-spacing:.4px; }
+.t-post__meta { display:flex; align-items:center; flex-wrap:wrap; gap:.5rem; font-size:.62rem; text-transform:uppercase; letter-spacing:1px; font-weight:600; color:#64748b; margin:0 0 .55rem; }
+.t-post__dot { opacity:.5; }
+.t-post__loc { color:#2563eb; }
+.t-post__excerpt { margin:0 0 .7rem; font-size:.82rem; line-height:1.5; color:#475569; }
+.t-post__full { animation: fadeIn .35s ease; }
+.t-post__paragraph { margin:0 0 .9rem; font-size:.82rem; line-height:1.55; color:#374151; }
+.t-post__tags { margin:-.25rem 0 .6rem; display:flex; flex-wrap:wrap; gap:.4rem; }
+.t-tag { background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; font-size:.55rem; padding:.28rem .55rem .34rem; border-radius:20px; font-weight:600; letter-spacing:.7px; text-transform:uppercase; }
+.t-post__toggle { align-self:flex-start; background:#2563eb; color:#fff; border:none; font-size:.62rem; letter-spacing:1px; padding:.5rem .75rem .55rem; border-radius:6px; font-weight:600; cursor:pointer; box-shadow:0 2px 5px -2px rgba(0,0,0,.28); transition: background .25s, box-shadow .25s, transform .25s; }
+.t-post__toggle:hover { background:#1d4ed8; box-shadow:0 6px 16px -6px rgba(0,0,0,.35); transform:translateY(-2px); }
+.t-post__toggle:active { transform:translateY(0); }
+.t-post__toggle:focus-visible { outline:3px solid #4f46e5; outline-offset:3px; }
+
+@media (max-width:940px){
+	.t-post { grid-template-columns: minmax(200px,300px) 1fr; }
+}
+@media (max-width:720px){
+	.t-post { grid-template-columns:1fr; }
+	.t-post__media-wrap { aspect-ratio:16 / 9; }
+	.t-post__title { font-size:1.05rem; }
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px);} to { opacity:1; transform:translateY(0);} }

@@ -1,0 +1,56 @@
+<div class="section-head">
+  <h2 class="welcome-head animate-in" aria-label="Request Center heading">Request <em>Center</em></h2>
+</div>
+<div class="intro-bar animate-in-delayed">
+  <p class="intro-bar__text">Submit certificate or permit requests. A reference number will be generated upon submission.</p>
+</div>
+<section class="request-layout" aria-label="Request submission and recent requests">
+  <form class="request-form" (ngSubmit)="submit()" #reqForm="ngForm" novalidate>
+    <fieldset class="request-form__group">
+      <legend class="sr-only">Request Type</legend>
+      <label class="field">
+        <span class="field__label">Request Type <span class="req" aria-hidden="true">*</span></span>
+        <select class="field__control" required [ngModel]="form().kind" name="kind" (ngModelChange)="update('kind',$event)">
+          <option value="" disabled>Select type...</option>
+          <option *ngFor="let k of kinds" [value]="k.value">{{ k.label }}</option>
+        </select>
+      </label>
+      <label class="field">
+        <span class="field__label">Applicant Name <span class="req" aria-hidden="true">*</span></span>
+        <input class="field__control" type="text" required minlength="2" [ngModel]="form().applicantName" name="applicantName" (ngModelChange)="update('applicantName',$event)" placeholder="Juan Dela Cruz" />
+      </label>
+      <label class="field">
+        <span class="field__label">Contact Number <span class="req" aria-hidden="true">*</span></span>
+        <input class="field__control" type="tel" required [ngModel]="form().contact" name="contact" (ngModelChange)="update('contact',$event)" placeholder="09XX XXX XXXX" />
+        <small class="hint">Mobile or reachable landline. Digits, +, space, - allowed.</small>
+      </label>
+      <label class="field field--full">
+        <span class="field__label">Purpose of Request</span>
+        <textarea class="field__control" rows="3" [ngModel]="form().purpose" name="purpose" (ngModelChange)="update('purpose',$event)" placeholder="(Optional) State reason or additional context"></textarea>
+      </label>
+    </fieldset>
+    <div class="actions">
+      <button type="submit" class="btn-primary" [disabled]="!canSubmit() || submitting()" aria-disabled="!canSubmit()">Submit Request</button>
+    </div>
+  </form>
+  <aside class="recent" aria-label="Recent requests">
+    <h3 class="recent__title">Recent Submissions</h3>
+    <ul class="recent__list" *ngIf="recent().length; else empty" role="list">
+      <li class="recent__item" *ngFor="let r of recent(); trackBy: trackByReq">
+        <div class="recent__meta">
+          <span class="recent__ref" title="Reference">{{ r.id }}</span>
+          <span class="recent__status" [attr.data-status]="r.status">{{ r.status }}</span>
+        </div>
+        <div class="recent__body">
+          <p class="recent__kind">{{ labelFor(r.kind) }}</p>
+          <p class="recent__applicant">{{ r.applicantName }}</p>
+          <p class="recent__time">{{ r.createdAt | date:'short' }}</p>
+          <p class="recent__purpose" *ngIf="r.purpose">{{ r.purpose }}</p>
+        </div>
+      </li>
+    </ul>
+    <ng-template #empty>
+      <p class="recent__empty">No submissions yet.</p>
+    </ng-template>
+  </aside>
+</section>
